@@ -1,0 +1,467 @@
+openapi: 3.1.0
+info:
+  title: GTM OS Phase 1 API Prototype
+  version: 0.1.0
+  summary: Internal Phase 1 prototype contract that will later be folded into the free-first Next.js architecture.
+servers:
+  - url: http://localhost:3000
+paths:
+  /v1/health/live:
+    get:
+      summary: Liveness probe
+      operationId: getLiveness
+      responses:
+        "200":
+          description: API process is alive.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                  - service
+                  - timestamp
+                properties:
+                  status:
+                    type: string
+                    const: ok
+                  service:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+  /v1/health/ready:
+    get:
+      summary: Readiness probe
+      operationId: getReadiness
+      responses:
+        "200":
+          description: API is ready to serve traffic.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                  - checks
+                properties:
+                  status:
+                    type: string
+                    const: ready
+                  checks:
+                    type: object
+                    additionalProperties:
+                      type: string
+  /v1/companies:
+    get:
+      summary: Return candidate target companies for local testing.
+      operationId: listCompanies
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: Company records.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - meta
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Company"
+                  meta:
+                    type: object
+                    required:
+                      - count
+                    properties:
+                      count:
+                        type: integer
+  /v1/opportunities/score:
+    post:
+      summary: Score a candidate-company opportunity.
+      operationId: scoreOpportunity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScoreOpportunityRequest"
+      responses:
+        "200":
+          description: Opportunity score.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: "#/components/schemas/ScoreOpportunityResponse"
+  /v1/dashboard/overview:
+    get:
+      summary: Return the live job application dashboard overview.
+      operationId: getDashboardOverview
+      responses:
+        "200":
+          description: Dashboard summary and recent application records.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: "#/components/schemas/DashboardOverview"
+  /v1/resume/tailor:
+    post:
+      summary: Tailor the master resume for a job posting.
+      operationId: tailorResume
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jobPosting:
+                  $ref: "#/components/schemas/JobPosting"
+      responses:
+        "200":
+          description: Tailored resume draft and outreach copy.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: "#/components/schemas/TailorResumeResponse"
+  /v1/applications/launch:
+    post:
+      summary: Tailor the resume, draft outreach, and record the application.
+      operationId: launchApplication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jobPosting:
+                  $ref: "#/components/schemas/JobPosting"
+      responses:
+        "200":
+          description: Application launch result.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: "#/components/schemas/LaunchApplicationResponse"
+components:
+  schemas:
+    Company:
+      type: object
+      required:
+        - id
+        - name
+        - domain
+        - stage
+        - fitScore
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        domain:
+          type: string
+        linkedinUrl:
+          type: string
+          format: uri
+        stage:
+          type: string
+        fitScore:
+          type: integer
+        hiringSignal:
+          type: string
+        personalizedObservation:
+          type: string
+    ScoreOpportunityRequest:
+      type: object
+      properties:
+        companyStage:
+          type: string
+          enum: [unknown, Seed, Series A, Series B, Growth, Public]
+        hasOpenRole:
+          type: boolean
+        recentNewsCount:
+          type: integer
+          minimum: 0
+        founderActivityScore:
+          type: integer
+          minimum: 0
+          maximum: 15
+        techFitScore:
+          type: integer
+          minimum: 0
+          maximum: 10
+        personalizationDepthScore:
+          type: integer
+          minimum: 0
+          maximum: 10
+    ScoreOpportunityResponse:
+      type: object
+      required:
+        - score
+        - recommendation
+        - breakdown
+      properties:
+        score:
+          type: integer
+        recommendation:
+          type: string
+          enum: [prioritize, monitor, deprioritize]
+        breakdown:
+          type: object
+          required:
+            - stageWeight
+            - hiringWeight
+            - newsWeight
+            - founderWeight
+            - techWeight
+            - personalizationWeight
+          properties:
+            stageWeight:
+              type: integer
+            hiringWeight:
+              type: integer
+            newsWeight:
+              type: integer
+            founderWeight:
+              type: integer
+            techWeight:
+              type: integer
+            personalizationWeight:
+              type: integer
+    JobPosting:
+      type: object
+      required:
+        - title
+        - company
+        - description
+      properties:
+        title:
+          type: string
+        company:
+          type: string
+        sourceUrl:
+          type: string
+          format: uri
+        location:
+          type: string
+        description:
+          type: string
+        contact:
+          type: object
+          properties:
+            name:
+              type: string
+            role:
+              type: string
+            email:
+              type: string
+            linkedinUrl:
+              type: string
+              format: uri
+    TailorResumeResponse:
+      type: object
+      required:
+        - jobTitle
+        - company
+        - headline
+        - summary
+        - sections
+        - keywordMatches
+      properties:
+        jobTitle:
+          type: string
+        company:
+          type: string
+        headline:
+          type: string
+        summary:
+          type: string
+        sections:
+          type: array
+          items:
+            type: object
+            required:
+              - title
+              - bullets
+            properties:
+              title:
+                type: string
+              bullets:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - tailored
+                    - reason
+                  properties:
+                    original:
+                      type: string
+                    tailored:
+                      type: string
+                    reason:
+                      type: string
+        keywordMatches:
+          type: array
+          items:
+            type: string
+    LaunchApplicationResponse:
+      type: object
+      required:
+        - application
+        - tailoredResume
+        - outreach
+        - deliveryStatus
+      properties:
+        application:
+          $ref: "#/components/schemas/ApplicationRecord"
+        tailoredResume:
+          $ref: "#/components/schemas/TailorResumeResponse"
+        outreach:
+          type: object
+          required:
+            - subject
+            - text
+          properties:
+            subject:
+              type: string
+            text:
+              type: string
+        deliveryStatus:
+          type: string
+          enum: [ready_to_send, needs_contact_email]
+    DashboardOverview:
+      type: object
+      required:
+        - summary
+        - recentApplications
+        - pipelineStages
+        - nextActions
+      properties:
+        summary:
+          type: object
+          required:
+            - totalApplications
+            - sent
+            - interviewing
+            - replies
+            - offers
+          properties:
+            totalApplications:
+              type: integer
+            sent:
+              type: integer
+            interviewing:
+              type: integer
+            replies:
+              type: integer
+            offers:
+              type: integer
+        recentApplications:
+          type: array
+          items:
+            $ref: "#/components/schemas/ApplicationRecord"
+        pipelineStages:
+          type: array
+          items:
+            $ref: "#/components/schemas/PipelineStage"
+        nextActions:
+          type: array
+          items:
+            $ref: "#/components/schemas/DashboardTask"
+    PipelineStage:
+      type: object
+      required:
+        - label
+        - count
+        - percentage
+      properties:
+        label:
+          type: string
+        count:
+          type: integer
+        percentage:
+          type: integer
+    DashboardTask:
+      type: object
+      required:
+        - title
+        - description
+        - priority
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        priority:
+          type: string
+          enum: [high, medium, low]
+    ApplicationRecord:
+      type: object
+      required:
+        - id
+        - companyName
+        - jobTitle
+        - status
+        - updatedAt
+        - source
+        - resumeTitle
+      properties:
+        id:
+          type: string
+        companyName:
+          type: string
+        jobTitle:
+          type: string
+        contactName:
+          type: string
+        contactRole:
+          type: string
+        contactEmail:
+          type: string
+        status:
+          type: string
+        appliedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        source:
+          type: string
+        resumeTitle:
+          type: string
+        outcomeSummary:
+          type: string
+        nextStep:
+          type: string

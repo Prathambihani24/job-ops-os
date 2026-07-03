@@ -1,0 +1,37 @@
+{
+  "name": "gtm-os-job-search",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "npm@11.13.0",
+  "engines": {
+    "node": ">=24.16.0"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "check-env": "node ./scripts/check-env.mjs",
+    "dev:api": "node ./apps/api/src/server.js",
+    "start:api": "node ./apps/api/src/server.js",
+    "dev:web": "npm run dev --workspace @gtm-os/web",
+    "build:web": "npm run build --workspace @gtm-os/web",
+    "lint:web": "npm run lint --workspace @gtm-os/web",
+    "test": "node --test ./apps/api/test/**/*.test.js",
+    "test:config": "npm --workspace @gtm-os/config test"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "autoprefixer": "^10.4.20",
+    "next": "^15.3.4",
+    "postcss": "^8.5.6",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.8.3",
+    "tsx": "^4.19.0"
+  }
+}

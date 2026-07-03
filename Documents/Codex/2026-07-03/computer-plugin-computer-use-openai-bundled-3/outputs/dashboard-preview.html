@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GTM OS Dashboard Preview</title>
+    <style>
+      :root {
+        --ink: #111827;
+        --sand: #f8f3e8;
+        --clay: #d97757;
+        --moss: #365314;
+        --steel: #475569;
+        --card: rgba(255, 255, 255, 0.84);
+        --line: rgba(148, 163, 184, 0.28);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Inter, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(217, 119, 87, 0.18), transparent 30%),
+          radial-gradient(circle at top right, rgba(54, 83, 20, 0.14), transparent 25%),
+          linear-gradient(180deg, #f8f3e8 0%, #f5efe3 52%, #ffffff 100%);
+      }
+      .wrap {
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 28px;
+      }
+      .hero, .panel, .card {
+        border: 1px solid var(--line);
+        background: var(--card);
+        backdrop-filter: blur(14px);
+        box-shadow: 0 18px 50px rgba(17, 24, 39, 0.08);
+      }
+      .hero {
+        border-radius: 32px;
+        padding: 34px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 28px;
+      }
+      .eyebrow {
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        font-size: 12px;
+        color: var(--clay);
+        font-weight: 700;
+      }
+      h1 {
+        margin: 12px 0 0;
+        font-size: clamp(42px, 4vw, 64px);
+        line-height: 0.98;
+        letter-spacing: -0.04em;
+      }
+      .lead {
+        max-width: 760px;
+        margin: 18px 0 0;
+        color: var(--steel);
+        font-size: 18px;
+        line-height: 1.7;
+      }
+      .focus {
+        min-width: 280px;
+        border-radius: 24px;
+        background: var(--ink);
+        color: var(--sand);
+        padding: 22px 24px;
+      }
+      .focus p { margin: 0; }
+      .focus .label { color: rgba(248, 243, 232, 0.7); font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; }
+      .focus .value { margin-top: 10px; font-size: 26px; font-weight: 700; }
+      .grid4, .grid3, .mid {
+        display: grid;
+        gap: 18px;
+      }
+      .grid4 { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 18px; }
+      .mid { grid-template-columns: 1.45fr 1fr; margin-top: 18px; }
+      .grid3 { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 18px; }
+      .card {
+        border-radius: 28px;
+        padding: 24px;
+      }
+      .panel {
+        border-radius: 32px;
+        padding: 24px;
+      }
+      .kicker {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.22em;
+        color: var(--steel);
+      }
+      .metric {
+        margin-top: 14px;
+        font-size: 46px;
+        font-weight: 700;
+        line-height: 1;
+      }
+      .desc {
+        margin-top: 12px;
+        color: var(--steel);
+        line-height: 1.6;
+        font-size: 14px;
+      }
+      .title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 9px 14px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .pill-green { color: var(--moss); background: rgba(54, 83, 20, 0.09); }
+      .pill-clay { color: var(--clay); background: rgba(217, 119, 87, 0.1); }
+      .stage-grid, .task-list { display: grid; gap: 14px; margin-top: 20px; }
+      .stage-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .stage, .task {
+        border-radius: 22px;
+        background: rgba(248, 250, 252, 0.94);
+        padding: 18px;
+      }
+      .stage .count {
+        margin-top: 12px;
+        font-size: 36px;
+        font-weight: 700;
+      }
+      .bar {
+        margin-top: 16px;
+        height: 10px;
+        border-radius: 999px;
+        background: rgba(148, 163, 184, 0.24);
+        overflow: hidden;
+      }
+      .fill { height: 100%; border-radius: inherit; background: var(--clay); }
+      .task-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+      .task-title { font-size: 18px; font-weight: 600; }
+      .task-desc { margin-top: 10px; color: var(--steel); line-height: 1.6; }
+      .tag {
+        padding: 7px 11px;
+        border-radius: 999px;
+        background: rgba(217, 119, 87, 0.1);
+        color: var(--clay);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+      @media (max-width: 1100px) {
+        .hero, .mid, .grid4, .grid3, .stage-grid { grid-template-columns: 1fr; }
+        .hero { display: grid; }
+        .focus { min-width: 0; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="hero">
+        <div>
+          <div class="eyebrow">Milestone 2 foundation</div>
+          <h1>AI GTM Operating System</h1>
+          <p class="lead">A portfolio-ready command center for pipeline visibility, AI research, outreach drafting, and repeatable GTM workflows. Built to start with your job search and expand later into sales, recruiting, partnerships, community growth, investor CRM, and founder outreach.</p>
+        </div>
+        <aside class="focus">
+          <p class="label">Focus</p>
+          <p class="value">Job search first</p>
+          <p class="desc" style="color: rgba(248,243,232,0.8); margin-top: 8px;">Architecture ready for sales, partnerships, recruiting, and founder outreach.</p>
+        </aside>
+      </section>
+
+      <section class="grid4">
+        <article class="card">
+          <div class="kicker">Active applications</div>
+          <div class="metric">24</div>
+          <div class="desc">Across software, GTM engineering, and AI operations roles.</div>
+        </article>
+        <article class="card">
+          <div class="kicker">Response rate</div>
+          <div class="metric">37%</div>
+          <div class="desc">Measured from personalized outreach and warm applications.</div>
+        </article>
+        <article class="card">
+          <div class="kicker">Upcoming interviews</div>
+          <div class="metric">3</div>
+          <div class="desc">Includes recruiter screen, founder chat, and technical round.</div>
+        </article>
+        <article class="card">
+          <div class="kicker">AI recommendations</div>
+          <div class="metric">12</div>
+          <div class="desc">High-signal companies surfaced by scoring and research agents.</div>
+        </article>
+      </section>
+
+      <section class="mid">
+        <article class="panel">
+          <div class="title-row">
+            <div>
+              <div class="kicker">Pipeline</div>
+              <h2 style="margin: 8px 0 0; font-size: 30px;">Application momentum</h2>
+            </div>
+            <span class="pill pill-green">Conversion-aware</span>
+          </div>
+          <div class="stage-grid">
+            <div class="stage">
+              <div class="kicker">Sourced</div>
+              <div class="count">82</div>
+              <div class="bar"><div class="fill" style="width: 100%"></div></div>
+            </div>
+            <div class="stage">
+              <div class="kicker">Applied</div>
+              <div class="count">24</div>
+              <div class="bar"><div class="fill" style="width: 29%"></div></div>
+            </div>
+            <div class="stage">
+              <div class="kicker">Interviewing</div>
+              <div class="count">6</div>
+              <div class="bar"><div class="fill" style="width: 7%"></div></div>
+            </div>
+            <div class="stage">
+              <div class="kicker">Offer Track</div>
+              <div class="count">1</div>
+              <div class="bar"><div class="fill" style="width: 1%"></div></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="kicker">Today</div>
+          <h2 style="margin: 8px 0 0; font-size: 30px;">Priority queue</h2>
+          <div class="task-list">
+            <div class="task">
+              <div class="task-head">
+                <div>
+                  <div class="task-title">Tailor resume for AI startup platform role</div>
+                  <div class="task-desc">Use the JD analyzer and resume tailoring agent before noon.</div>
+                </div>
+                <span class="tag">High</span>
+              </div>
+            </div>
+            <div class="task">
+              <div class="task-head">
+                <div>
+                  <div class="task-title">Review founder hiring signals</div>
+                  <div class="task-desc">Check recent LinkedIn and product launch activity for top targets.</div>
+                </div>
+                <span class="tag">High</span>
+              </div>
+            </div>
+            <div class="task">
+              <div class="task-head">
+                <div>
+                  <div class="task-title">Prepare weekly pipeline summary</div>
+                  <div class="task-desc">Send conversion metrics and next actions into Slack.</div>
+                </div>
+                <span class="tag">Medium</span>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="grid3">
+        <article class="card">
+          <div class="kicker">Provider architecture</div>
+          <h3 style="margin: 12px 0 0; font-size: 26px;">Swap lead and AI providers cleanly</h3>
+          <div class="desc">Adapters live behind stable interfaces so CSV, Google Sheets, Ollama, HubSpot, and future paid providers can change without reworking the product.</div>
+        </article>
+        <article class="card">
+          <div class="kicker">Workflow thinking</div>
+          <h3 style="margin: 12px 0 0; font-size: 26px;">Design for GTM execution, not just CRUD</h3>
+          <div class="desc">The system is centered on repeatable workflows like research, prioritization, outreach generation, and daily summaries instead of isolated screens.</div>
+        </article>
+        <article class="card">
+          <div class="kicker">Portfolio value</div>
+          <h3 style="margin: 12px 0 0; font-size: 26px;">Shows technical depth with business intent</h3>
+          <div class="desc">This project demonstrates systems design, automation thinking, and user-facing judgment that map well to GTM engineering roles at AI startups.</div>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

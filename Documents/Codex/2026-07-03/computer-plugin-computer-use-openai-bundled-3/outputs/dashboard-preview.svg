@@ -1,0 +1,154 @@
+
+<svg width="1600" height="1320" viewBox="0 0 1600 1320" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f8f3e8"/>
+      <stop offset="55%" stop-color="#f5efe3"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+    <radialGradient id="glow1" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(160 120) rotate(35) scale(320 220)">
+      <stop stop-color="#d97757" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#d97757" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1390 120) rotate(150) scale(300 220)">
+      <stop stop-color="#365314" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#365314" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#111827" flood-opacity="0.08"/>
+    </filter>
+    <style>
+      .ink { fill: #111827; }
+      .steel { fill: #475569; }
+      .sand { fill: #f8f3e8; }
+      .clay { fill: #d97757; }
+      .moss { fill: #365314; }
+      .card { fill: rgba(255,255,255,0.84); stroke: rgba(148,163,184,0.28); }
+      .kicker { font: 700 13px Inter, Arial, sans-serif; letter-spacing: 0.28em; text-transform: uppercase; }
+      .title { font: 700 54px Inter, Arial, sans-serif; letter-spacing: -0.04em; }
+      .lead { font: 400 21px Inter, Arial, sans-serif; }
+      .sectionTitle { font: 700 28px Inter, Arial, sans-serif; }
+      .metric { font: 700 52px Inter, Arial, sans-serif; }
+      .label { font: 700 18px Inter, Arial, sans-serif; }
+      .body { font: 400 15px Inter, Arial, sans-serif; }
+      .small { font: 700 12px Inter, Arial, sans-serif; letter-spacing: 0.18em; text-transform: uppercase; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1320" fill="url(#bg)"/>
+  <rect width="1600" height="1320" fill="url(#glow1)"/>
+  <rect width="1600" height="1320" fill="url(#glow2)"/>
+
+  <g filter="url(#shadow)">
+    <rect x="40" y="40" width="1520" height="272" rx="32" class="card"/>
+    <text x="74" y="92" class="kicker clay" fill="#d97757">Milestone 2 foundation</text>
+    <text x="74" y="162" class="title ink">AI GTM Operating System</text>
+    <text x="74" y="208" class="lead steel">A portfolio-ready command center for pipeline visibility, AI research, outreach drafting, and repeatable GTM workflows.</text>
+    <text x="74" y="244" class="lead steel">Built to start with your job search and expand later into sales, recruiting, partnerships, community growth, investor CRM, and founder outreach.</text>
+
+    <rect x="1178" y="82" width="342" height="172" rx="24" fill="#111827"/>
+    <text x="1212" y="128" class="small" fill="#f8f3e8" opacity="0.7">Focus</text>
+    <text x="1212" y="176" class="label" fill="#f8f3e8" style="font-size:30px">Job search first</text>
+    <text x="1212" y="212" class="body" fill="#f8f3e8" opacity="0.84">Ready for sales, recruiting, and partnerships too.</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="40" y="340" width="352" height="214" rx="28" class="card"/>
+    <rect x="416" y="340" width="352" height="214" rx="28" class="card"/>
+    <rect x="792" y="340" width="352" height="214" rx="28" class="card"/>
+    <rect x="1168" y="340" width="392" height="214" rx="28" class="card"/>
+
+    <text x="68" y="388" class="small steel" fill="#475569">Active applications</text>
+    <text x="68" y="462" class="metric ink">24</text>
+    <text x="68" y="516" class="body steel">Across software, GTM, and AI ops roles.</text>
+
+    <text x="444" y="388" class="small steel" fill="#475569">Response rate</text>
+    <text x="444" y="462" class="metric ink">37%</text>
+    <text x="444" y="516" class="body steel">Measured from personalized outreach.</text>
+
+    <text x="820" y="388" class="small steel" fill="#475569">Upcoming interviews</text>
+    <text x="820" y="462" class="metric ink">3</text>
+    <text x="820" y="516" class="body steel">Recruiter screen, founder chat, technical round.</text>
+
+    <text x="1196" y="388" class="small steel" fill="#475569">AI recommendations</text>
+    <text x="1196" y="462" class="metric ink">12</text>
+    <text x="1196" y="516" class="body steel">High-signal companies from scoring and research.</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="40" y="586" width="940" height="344" rx="32" class="card"/>
+    <rect x="1008" y="586" width="552" height="344" rx="32" class="card"/>
+
+    <text x="68" y="634" class="small steel" fill="#475569">Pipeline</text>
+    <text x="68" y="679" class="sectionTitle ink">Application momentum</text>
+    <rect x="818" y="612" width="132" height="36" rx="18" fill="rgba(54,83,20,0.09)"/>
+    <text x="839" y="636" class="small" fill="#365314">Conversion-aware</text>
+
+    <g transform="translate(68 718)">
+      <rect x="0" y="0" width="206" height="180" rx="22" fill="#f8fafc"/>
+      <rect x="224" y="0" width="206" height="180" rx="22" fill="#f8fafc"/>
+      <rect x="448" y="0" width="206" height="180" rx="22" fill="#f8fafc"/>
+      <rect x="672" y="0" width="206" height="180" rx="22" fill="#f8fafc"/>
+
+      <text x="20" y="34" class="small steel" fill="#475569">Sourced</text>
+      <text x="20" y="88" class="label ink" style="font-size:36px">82</text>
+      <rect x="20" y="124" width="166" height="10" rx="5" fill="rgba(148,163,184,0.24)"/>
+      <rect x="20" y="124" width="166" height="10" rx="5" fill="#d97757"/>
+
+      <text x="244" y="34" class="small steel" fill="#475569">Applied</text>
+      <text x="244" y="88" class="label ink" style="font-size:36px">24</text>
+      <rect x="244" y="124" width="166" height="10" rx="5" fill="rgba(148,163,184,0.24)"/>
+      <rect x="244" y="124" width="49" height="10" rx="5" fill="#d97757"/>
+
+      <text x="468" y="34" class="small steel" fill="#475569">Interviewing</text>
+      <text x="468" y="88" class="label ink" style="font-size:36px">6</text>
+      <rect x="468" y="124" width="166" height="10" rx="5" fill="rgba(148,163,184,0.24)"/>
+      <rect x="468" y="124" width="12" height="10" rx="5" fill="#d97757"/>
+
+      <text x="692" y="34" class="small steel" fill="#475569">Offer Track</text>
+      <text x="692" y="88" class="label ink" style="font-size:36px">1</text>
+      <rect x="692" y="124" width="166" height="10" rx="5" fill="rgba(148,163,184,0.24)"/>
+      <rect x="692" y="124" width="3" height="10" rx="5" fill="#d97757"/>
+    </g>
+
+    <text x="1036" y="634" class="small steel" fill="#475569">Today</text>
+    <text x="1036" y="679" class="sectionTitle ink">Priority queue</text>
+
+    <rect x="1036" y="714" width="488" height="72" rx="20" fill="#f8fafc"/>
+    <rect x="1036" y="798" width="488" height="72" rx="20" fill="#f8fafc"/>
+    <rect x="1036" y="882" width="488" height="72" rx="20" fill="#f8fafc"/>
+
+    <text x="1060" y="747" class="label ink">Tailor resume for AI startup role</text>
+    <text x="1060" y="774" class="body steel">Use the JD analyzer and resume tailoring agent before noon.</text>
+    <rect x="1418" y="732" width="82" height="30" rx="15" fill="rgba(217,119,87,0.1)"/>
+    <text x="1431" y="753" class="small clay" fill="#d97757">High</text>
+
+    <text x="1060" y="831" class="label ink">Review founder hiring signals</text>
+    <text x="1060" y="858" class="body steel">Check recent launches and hiring activity for top targets.</text>
+    <rect x="1418" y="816" width="82" height="30" rx="15" fill="rgba(217,119,87,0.1)"/>
+    <text x="1431" y="837" class="small clay" fill="#d97757">High</text>
+
+    <text x="1060" y="915" class="label ink">Prepare weekly pipeline summary</text>
+    <text x="1060" y="942" class="body steel">Send conversion metrics and next actions into Slack.</text>
+    <rect x="1410" y="900" width="90" height="30" rx="15" fill="rgba(217,119,87,0.1)"/>
+    <text x="1421" y="921" class="small clay" fill="#d97757">Medium</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="40" y="962" width="474" height="214" rx="28" class="card"/>
+    <rect x="563" y="962" width="474" height="214" rx="28" class="card"/>
+    <rect x="1086" y="962" width="474" height="214" rx="28" class="card"/>
+
+    <text x="68" y="1010" class="small steel" fill="#475569">Provider architecture</text>
+    <text x="68" y="1054" class="label ink" style="font-size:26px">Swap lead and AI providers cleanly</text>
+    <text x="68" y="1096" class="body steel">Adapters stay behind interfaces so providers can swap without rework.</text>
+
+    <text x="591" y="1010" class="small steel" fill="#475569">Workflow thinking</text>
+    <text x="591" y="1054" class="label ink" style="font-size:26px">Design for GTM execution, not just CRUD</text>
+    <text x="591" y="1096" class="body steel">Repeatable workflows drive research, prioritization, and outreach.</text>
+
+    <text x="1114" y="1010" class="small steel" fill="#475569">Portfolio value</text>
+    <text x="1114" y="1054" class="label ink" style="font-size:26px">Shows technical depth with business intent</text>
+    <text x="1114" y="1096" class="body steel">Demonstrates systems design and GTM judgment for startup roles.</text>
+  </g>
+</svg>
