@@ -25,6 +25,8 @@ export function loadConfig() {
     apiBaseUrl: readEnv("API_BASE_URL", `http://localhost:${port}`),
     apolloApiKey: process.env.APOLLO_API_KEY ?? "",
     supabaseUrl: process.env.SUPABASE_URL ?? "",
-    supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? ""
+    supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
+    anthropicApiKey: process.env.ANTHROPIC_API_KEY ?? "",
+    anthropicModel: process.env.ANTHROPIC_MODEL ?? "claude-sonnet-5"
   };
 }

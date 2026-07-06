@@ -18,9 +18,6 @@
     "check-env": "node ./scripts/check-env.mjs",
     "dev:api": "node ./apps/api/src/server.js",
     "start:api": "node ./apps/api/src/server.js",
-    "dev:web": "npm run dev --workspace @gtm-os/web",
-    "build:web": "npm run build --workspace @gtm-os/web",
-    "lint:web": "npm run lint --workspace @gtm-os/web",
     "test": "node --test ./apps/api/test/**/*.test.js",
     "test:config": "npm --workspace @gtm-os/config test"
   },

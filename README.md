@@ -16,7 +16,7 @@ A portfolio-ready command center for pipeline visibility, AI research, outreach 
 npm install
 cp .env.example .env
 npm run dev:api
-npm run dev:web
+npm run dev
 
 ## Documentation
 

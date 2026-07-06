@@ -6,6 +6,7 @@ try {
   // The validator will report missing values below if the file is absent.
 }
 
+// Keys the app cannot run without: DB connection + the port/name it boots with.
 const requiredKeys = [
   "NODE_ENV",
   "PORT",
@@ -13,17 +14,21 @@ const requiredKeys = [
   "DATABASE_URL",
   "SUPABASE_URL",
   "SUPABASE_ANON_KEY",
-  "SUPABASE_SERVICE_ROLE_KEY",
+  "SUPABASE_SERVICE_ROLE_KEY"
+];
+
+// Keys that unlock optional features. Nothing in the codebase currently reads
+// HUBSPOT_ACCESS_TOKEN, SLACK_BOT_TOKEN, or SLACK_SIGNING_SECRET, so they live
+// here rather than blocking startup. N8N_ENCRYPTION_KEY is only needed if you
+// run the n8n container from docker-compose.yml.
+const optionalKeys = [
   "N8N_ENCRYPTION_KEY",
   "HUBSPOT_ACCESS_TOKEN",
   "SLACK_BOT_TOKEN",
   "SLACK_SIGNING_SECRET",
   "AI_PROVIDER",
   "OLLAMA_BASE_URL",
-  "OLLAMA_MODEL"
-];
-
-const optionalKeys = [
+  "OLLAMA_MODEL",
   "NOTION_API_KEY",
   "NOTION_DATABASE_ID",
   "OPENAI_API_KEY",

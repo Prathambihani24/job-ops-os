@@ -136,7 +136,7 @@ export function createApplicationTracker({ profile, logger, config }) {
       };
     },
     async tailorAndDraft(jobPosting) {
-      const tailoredResume = tailorResume(profile, jobPosting);
+      const tailoredResume = await tailorResume(profile, jobPosting);
       const outreach = buildOutreachMessage(profile, jobPosting, tailoredResume);
 
       logger.info("Resume tailored.", {
