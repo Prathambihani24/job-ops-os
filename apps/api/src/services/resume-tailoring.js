@@ -1,6 +1,7 @@
 import { loadConfig } from "../config/env.js";
 
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
+const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
 function uniq(values) {
   return [...new Set(values.filter(Boolean))];
@@ -107,7 +108,7 @@ function buildOutreachMessageOffline(profile, jobPosting, tailoredResume) {
   };
 }
 
-function buildAnthropicPrompt(profile, jobPosting) {
+function buildTailoringPrompt(profile, jobPosting) {
   return `You are a resume-tailoring assistant. Given a candidate's master resume profile and a target job posting, produce a tailored resume and a short outreach email.
 
 Respond with ONLY valid JSON, no markdown fences, no commentary, matching exactly this shape:
@@ -162,6 +163,37 @@ function extractJson(rawText) {
   return JSON.parse(candidate.trim());
 }
 
+async function callGroq(config, prompt) {
+  const response = await fetch(GROQ_API_URL, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      authorization: `Bearer ${config.groqApiKey}`
+    },
+    body: JSON.stringify({
+      model: config.groqModel,
+      messages: [{ role: "user", content: prompt }],
+      response_format: { type: "json_object" },
+      temperature: 0.4,
+      max_tokens: 2000
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Groq API request failed: ${response.status} ${errorText}`);
+  }
+
+  const payload = await response.json();
+  const messageContent = payload.choices?.[0]?.message?.content;
+
+  if (!messageContent) {
+    throw new Error("Groq API returned no message content.");
+  }
+
+  return extractJson(messageContent);
+}
+
 async function callAnthropic(config, prompt) {
   const response = await fetch(ANTHROPIC_API_URL, {
     method: "POST",
@@ -192,43 +224,60 @@ async function callAnthropic(config, prompt) {
   return extractJson(textBlock.text);
 }
 
+function shapeAiResult(jobPosting, aiResult, generatedBy) {
+  return {
+    jobTitle: jobPosting.title,
+    company: jobPosting.company,
+    headline: aiResult.headline,
+    summary: aiResult.summary,
+    sections: aiResult.sections.map((section) => ({
+      title: section.title,
+      bullets: section.bullets
+    })),
+    keywordMatches: aiResult.keywordMatches ?? [],
+    outreachSubject: aiResult.outreachSubject,
+    outreachBody: aiResult.outreachBody,
+    generatedBy
+  };
+}
+
 /**
  * Tailors a resume against a job posting.
  *
- * If ANTHROPIC_API_KEY is configured, this calls the real Claude API to
- * rewrite bullets and draft outreach in a way that actually reflects the job
- * description. If the key is missing, or the API call fails for any reason
- * (bad key, network issue, rate limit), it silently falls back to a basic
- * offline keyword matcher so the app never hard-fails.
+ * Tries providers in this order, falling through silently on any failure
+ * (missing key, network issue, rate limit, bad response) so the app never
+ * hard-fails on the person using it:
+ *
+ *   1. Groq (llama-3.3-70b-versatile) - free tier, no credit card required.
+ *      This is the recommended default: fast, generous rate limits, good
+ *      enough quality for rewriting resume bullets and outreach copy.
+ *   2. Anthropic - only used if you've configured a paid ANTHROPIC_API_KEY.
+ *   3. Offline keyword matcher - zero network calls, always works, but is
+ *      just string matching, not real tailoring.
  */
 export async function tailorResume(profile, jobPosting) {
   const config = loadConfig();
+  const prompt = buildTailoringPrompt(profile, jobPosting);
 
-  if (!config.anthropicApiKey) {
-    return tailorResumeOffline(profile, jobPosting);
+  if (config.groqApiKey) {
+    try {
+      const aiResult = await callGroq(config, prompt);
+      return shapeAiResult(jobPosting, aiResult, `groq:${config.groqModel}`);
+    } catch {
+      // Fall through to the next provider.
+    }
   }
 
-  try {
-    const prompt = buildAnthropicPrompt(profile, jobPosting);
-    const aiResult = await callAnthropic(config, prompt);
-
-    return {
-      jobTitle: jobPosting.title,
-      company: jobPosting.company,
-      headline: aiResult.headline,
-      summary: aiResult.summary,
-      sections: aiResult.sections.map((section) => ({
-        title: section.title,
-        bullets: section.bullets
-      })),
-      keywordMatches: aiResult.keywordMatches ?? [],
-      outreachSubject: aiResult.outreachSubject,
-      outreachBody: aiResult.outreachBody,
-      generatedBy: `anthropic:${config.anthropicModel}`
-    };
-  } catch {
-    return tailorResumeOffline(profile, jobPosting);
+  if (config.anthropicApiKey) {
+    try {
+      const aiResult = await callAnthropic(config, prompt);
+      return shapeAiResult(jobPosting, aiResult, `anthropic:${config.anthropicModel}`);
+    } catch {
+      // Fall through to the offline path.
+    }
   }
+
+  return tailorResumeOffline(profile, jobPosting);
 }
 
 /**
