@@ -12,6 +12,9 @@
     "packages/*"
   ],
   "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "check-env": "node ./scripts/check-env.mjs",
     "dev:api": "node ./apps/api/src/server.js",
     "start:api": "node ./apps/api/src/server.js",

@@ -22,6 +22,44 @@ export type DashboardHighlight = {
   description: string;
 };
 
+export type CareerRoleSuggestion = {
+  title: string;
+  fitScore: number;
+  priority: "primary" | "secondary" | "explore";
+  summary: string;
+  whyItFits: string[];
+  searchQueries: string[];
+};
+
+export type CareerCompanyMatch = {
+  id: string;
+  name: string;
+  domain?: string;
+  linkedinUrl?: string;
+  stage: string;
+  fitScore: number;
+  source: string;
+  reason: string;
+  targetRole: string;
+  hiringSignal: string;
+  personalizedObservation: string;
+};
+
+export type CareerProviderStatus = {
+  provider: string;
+  health: ProviderHealth;
+  checkedAt: string;
+  notes?: string;
+};
+
+export type CareerPlan = {
+  primaryGoal: string;
+  roleSuggestions: CareerRoleSuggestion[];
+  companyMatches: CareerCompanyMatch[];
+  providerStatus: CareerProviderStatus;
+  nextSteps: string[];
+};
+
 export type ProviderHealth = "healthy" | "degraded" | "offline";
 
 export type LeadRecord = {
@@ -127,4 +165,5 @@ export type DashboardOverview = {
   recentApplications: ApplicationRecord[];
   pipelineStages: DashboardPipelineStage[];
   nextActions: DashboardTask[];
+  careerPlan: CareerPlan;
 };

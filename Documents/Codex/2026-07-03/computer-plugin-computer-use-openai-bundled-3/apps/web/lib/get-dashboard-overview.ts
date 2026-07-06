@@ -1,4 +1,5 @@
 import type { ApplicationRecord, DashboardOverview } from "@gtm-os/types";
+import { buildDashboardOverview } from "../../api/src/services/dashboard-data.js";
 
 function getSupabaseConfig() {
   const supabaseUrl = process.env.SUPABASE_URL;
@@ -40,17 +41,20 @@ async function readLiveApplications() {
 }
 
 async function readApiOverview(fallbackOverview: DashboardOverview) {
-  const apiBaseUrl = process.env.API_BASE_URL ?? "http://127.0.0.1:3000";
-  const response = await fetch(`${apiBaseUrl}/v1/dashboard/overview`, {
-    cache: "no-store"
-  });
+  if (process.env.API_BASE_URL) {
+    const response = await fetch(`${process.env.API_BASE_URL}/v1/dashboard/overview`, {
+      cache: "no-store"
+    });
 
-  if (!response.ok) {
-    return fallbackOverview;
+    if (!response.ok) {
+      return fallbackOverview;
+    }
+
+    const payload = (await response.json()) as { data?: DashboardOverview };
+    return payload.data ?? fallbackOverview;
   }
 
-  const payload = (await response.json()) as { data?: DashboardOverview };
-  return payload.data ?? fallbackOverview;
+  return (await buildDashboardOverview()) as DashboardOverview;
 }
 
 export async function getDashboardOverview(
@@ -95,7 +99,8 @@ export async function getDashboardOverview(
           { label: "Interviewing", count: summary.interviewing, percentage: 16 },
           { label: "Offer Track", count: summary.offers, percentage: 2 }
         ],
-        nextActions: fallbackOverview.nextActions
+        nextActions: fallbackOverview.nextActions,
+        careerPlan: fallbackOverview.careerPlan
       };
     }
   } catch {

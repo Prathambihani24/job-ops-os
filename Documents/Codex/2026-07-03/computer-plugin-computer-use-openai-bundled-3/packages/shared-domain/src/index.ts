@@ -1,5 +1,6 @@
 import type {
   ApplicationRecord,
+  CareerPlan,
   DashboardOverview,
   DashboardHighlight,
   DashboardMetric,
@@ -76,6 +77,117 @@ export const dashboardHighlights: DashboardHighlight[] = [
   }
 ];
 
+export const careerPlan: CareerPlan = {
+  primaryGoal: "Target social media, growth marketing, GTM operations, and marketing automation roles.",
+  roleSuggestions: [
+    {
+      title: "Social Media Manager",
+      fitScore: 96,
+      priority: "primary",
+      summary:
+        "Best match for your current experience managing content, engagement, calendars, and analytics.",
+      whyItFits: [
+        "Matches your current Social Media Manager experience.",
+        "Uses content, engagement, and analytics strengths directly.",
+        "Pairs well with Canva, Adobe Express, and Instagram Analytics."
+      ],
+      searchQueries: ["social media manager", "brand social media", "community and social content"]
+    },
+    {
+      title: "Growth Marketing Associate",
+      fitScore: 91,
+      priority: "primary",
+      summary:
+        "Strong fit for lead generation, content marketing, and campaign execution roles.",
+      whyItFits: [
+        "Supported 500+ lead generation efforts with Apollo.io and LinkedIn Sales Navigator.",
+        "You already have campaign and outreach workflow experience.",
+        "Useful bridge from marketing into GTM operations."
+      ],
+      searchQueries: ["growth marketing associate", "demand generation", "growth operations"]
+    },
+    {
+      title: "GTM Operations Associate",
+      fitScore: 88,
+      priority: "secondary",
+      summary:
+        "Best for startups that want someone who can connect CRM, outreach, reporting, and automation.",
+      whyItFits: [
+        "You have hands-on experience with HubSpot, Apollo.io, and CRM-style workflows.",
+        "The role aligns with your AI automation and tracking mindset.",
+        "Good interview story for systems and process improvement."
+      ],
+      searchQueries: ["gtm operations", "revenue operations associate", "sales operations"]
+    },
+    {
+      title: "Marketing Operations Specialist",
+      fitScore: 85,
+      priority: "secondary",
+      summary:
+        "Ideal for marketing teams that need someone to manage tools, reporting, and campaign execution.",
+      whyItFits: [
+        "Strong overlap with Excel, analytics, campaign management, and CRM support.",
+        "Your education in computer engineering adds technical credibility.",
+        "This role can evolve into broader GTM systems work."
+      ],
+      searchQueries: ["marketing operations", "marketing ops specialist", "crm marketing"]
+    }
+  ],
+  companyMatches: [
+    {
+      id: "cmp_01",
+      name: "Orbital Revenue",
+      domain: "orbitalrevenue.example",
+      linkedinUrl: "https://www.linkedin.com/company/orbital-revenue",
+      stage: "Series A",
+      fitScore: 92,
+      source: "apollo",
+      reason: "Strong fit for growth, CRM, and outreach automation.",
+      targetRole: "GTM Operations Associate",
+      hiringSignal: "Posted for GTM systems and outbound tooling.",
+      personalizedObservation: "Likely to value someone who can combine lead gen with workflow design."
+    },
+    {
+      id: "cmp_02",
+      name: "Signal Foundry",
+      domain: "signalfoundry.example",
+      linkedinUrl: "https://www.linkedin.com/company/signal-foundry",
+      stage: "Seed",
+      fitScore: 89,
+      source: "apollo",
+      reason: "Founder-led company likely to need social and growth execution.",
+      targetRole: "Growth Marketing Associate",
+      hiringSignal: "Founder activity suggests outbound and brand building work.",
+      personalizedObservation: "Good place to pitch yourself as a hands-on operator."
+    },
+    {
+      id: "cmp_03",
+      name: "Northwind Labs",
+      domain: "northwindlabs.example",
+      linkedinUrl: "https://www.linkedin.com/company/northwind-labs",
+      stage: "Seed",
+      fitScore: 87,
+      source: "apollo",
+      reason: "Fits a marketing/CRM operator who can support pipeline and customer touchpoints.",
+      targetRole: "Marketing Operations Specialist",
+      hiringSignal: "Hiring across customer and go-to-market functions.",
+      personalizedObservation: "Likely to appreciate cross-functional communication skills."
+    }
+  ],
+  providerStatus: {
+    provider: "apollo",
+    health: "degraded",
+    checkedAt: "2026-07-03T00:00:00.000Z",
+    notes: "Apollo is modeled as an optional adapter. Connect APOLLO_API_KEY to switch from the free fallback company list."
+  },
+  nextSteps: [
+    "Choose the primary role target for the week.",
+    "Use Apollo to source companies that match that role.",
+    "Tailor the resume and outreach for each company.",
+    "Send applications and capture every outcome in the dashboard."
+  ]
+};
+
 export const dashboardApplications: ApplicationRecord[] = [
   {
     id: "app_001",
@@ -136,5 +248,6 @@ export const dashboardOverview: DashboardOverview = {
   },
   recentApplications: dashboardApplications,
   pipelineStages: dashboardPipelineStages,
-  nextActions: dashboardTasks
+  nextActions: dashboardTasks,
+  careerPlan
 };

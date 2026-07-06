@@ -23,6 +23,7 @@ export function loadConfig() {
     port,
     logLevel: readEnv("LOG_LEVEL", "info"),
     apiBaseUrl: readEnv("API_BASE_URL", `http://localhost:${port}`),
+    apolloApiKey: process.env.APOLLO_API_KEY ?? "",
     supabaseUrl: process.env.SUPABASE_URL ?? "",
     supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? ""
   };

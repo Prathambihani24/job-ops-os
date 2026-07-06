@@ -1,12 +1,16 @@
 import http from "node:http";
 import { loadConfig } from "./config/env.js";
 import { mockCompanies } from "./data/mock-companies.js";
-import { masterResumeProfile } from "./data/master-resume-profile.js";
 import { sampleJobPosting } from "./data/sample-jobs.js";
 import { createLogger } from "./lib/logger.js";
 import { sendJson, readJsonBody } from "./lib/response.js";
 import { createRouter } from "./lib/router.js";
-import { createApplicationTracker } from "./services/application-tracker.js";
+import {
+  buildCareerPlan,
+  buildDashboardOverview,
+  createDashboardDataServices,
+  launchApplicationFlow
+} from "./services/dashboard-data.js";
 import { scoreOpportunity } from "./services/opportunity-scoring.js";
 
 export function buildApp() {
@@ -16,11 +20,7 @@ export function buildApp() {
     environment: config.nodeEnv
   });
   const router = createRouter();
-  const tracker = createApplicationTracker({
-    profile: masterResumeProfile,
-    logger,
-    config
-  });
+  const { tracker } = createDashboardDataServices();
 
   router.register("GET", "/v1/health/live", async (_request, response) => {
     sendJson(response, 200, {
@@ -36,7 +36,7 @@ export function buildApp() {
       checks: {
         api: "pass",
         database: "ready-for-supabase",
-        integrations: "resume-tailoring-ready"
+        integrations: config.apolloApiKey ? "resume-tailoring-ready with apollo" : "resume-tailoring-ready with free company fallback"
       }
     });
   });
@@ -63,10 +63,14 @@ export function buildApp() {
   });
 
   router.register("GET", "/v1/dashboard/overview", async (_request, response) => {
-    const overview = await tracker.summarize();
-
     sendJson(response, 200, {
-      data: overview
+      data: await buildDashboardOverview()
+    });
+  });
+
+  router.register("GET", "/v1/career/plan", async (_request, response) => {
+    sendJson(response, 200, {
+      data: buildCareerPlan()
     });
   });
 
@@ -83,23 +87,9 @@ export function buildApp() {
   router.register("POST", "/v1/applications/launch", async (request, response) => {
     const body = await readJsonBody(request);
     const jobPosting = body.jobPosting ?? sampleJobPosting;
-    const result = await tracker.tailorAndDraft(jobPosting);
-
-    logger.info("Application launched.", {
-      company: jobPosting.company,
-      jobTitle: jobPosting.title,
-      contactEmail: jobPosting.contact?.email ?? null
-    });
 
     sendJson(response, 200, {
-      data: {
-        application: result.application,
-        tailoredResume: result.tailoredResume,
-        outreach: result.outreach,
-        deliveryStatus: jobPosting.contact?.email
-          ? "ready_to_send"
-          : "needs_contact_email"
-      }
+      data: await launchApplicationFlow(jobPosting)
     });
   });
 

@@ -124,6 +124,22 @@ paths:
                 properties:
                   data:
                     $ref: "#/components/schemas/DashboardOverview"
+  /v1/career/plan:
+    get:
+      summary: Return career role suggestions and Apollo-style company matches.
+      operationId: getCareerPlan
+      responses:
+        "200":
+          description: Career plan with role and company recommendations.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CareerPlan"
   /v1/resume/tailor:
     post:
       summary: Tailor the master resume for a job posting.
@@ -360,6 +376,111 @@ components:
         deliveryStatus:
           type: string
           enum: [ready_to_send, needs_contact_email]
+    CareerPlan:
+      type: object
+      required:
+        - primaryGoal
+        - roleSuggestions
+        - companyMatches
+        - providerStatus
+        - nextSteps
+      properties:
+        primaryGoal:
+          type: string
+        roleSuggestions:
+          type: array
+          items:
+            $ref: "#/components/schemas/CareerRoleSuggestion"
+        companyMatches:
+          type: array
+          items:
+            $ref: "#/components/schemas/CareerCompanyMatch"
+        providerStatus:
+          $ref: "#/components/schemas/CareerProviderStatus"
+        nextSteps:
+          type: array
+          items:
+            type: string
+    CareerRoleSuggestion:
+      type: object
+      required:
+        - title
+        - fitScore
+        - priority
+        - summary
+        - whyItFits
+        - searchQueries
+      properties:
+        title:
+          type: string
+        fitScore:
+          type: integer
+        priority:
+          type: string
+          enum: [primary, secondary, explore]
+        summary:
+          type: string
+        whyItFits:
+          type: array
+          items:
+            type: string
+        searchQueries:
+          type: array
+          items:
+            type: string
+    CareerCompanyMatch:
+      type: object
+      required:
+        - id
+        - name
+        - stage
+        - fitScore
+        - source
+        - reason
+        - targetRole
+        - hiringSignal
+        - personalizedObservation
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        domain:
+          type: string
+        linkedinUrl:
+          type: string
+          format: uri
+        stage:
+          type: string
+        fitScore:
+          type: integer
+        source:
+          type: string
+        reason:
+          type: string
+        targetRole:
+          type: string
+        hiringSignal:
+          type: string
+        personalizedObservation:
+          type: string
+    CareerProviderStatus:
+      type: object
+      required:
+        - provider
+        - health
+        - checkedAt
+      properties:
+        provider:
+          type: string
+        health:
+          type: string
+          enum: [healthy, degraded, offline]
+        checkedAt:
+          type: string
+          format: date-time
+        notes:
+          type: string
     DashboardOverview:
       type: object
       required:
@@ -367,6 +488,7 @@ components:
         - recentApplications
         - pipelineStages
         - nextActions
+        - careerPlan
       properties:
         summary:
           type: object
@@ -399,6 +521,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DashboardTask"
+        careerPlan:
+          $ref: "#/components/schemas/CareerPlan"
     PipelineStage:
       type: object
       required:

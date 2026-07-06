@@ -116,4 +116,29 @@ test("dashboard overview endpoint returns tracked outcomes", async () => {
   assert.equal(typeof body.data.summary.totalApplications, "number");
   assert.ok(Array.isArray(body.data.recentApplications));
   assert.ok(body.data.recentApplications.length > 0);
+  assert.ok(Array.isArray(body.data.careerPlan.roleSuggestions));
+  assert.ok(body.data.careerPlan.roleSuggestions.length > 0);
+});
+
+test("career plan endpoint recommends roles and companies", async () => {
+  process.env.NODE_ENV = "test";
+  process.env.PORT = "3000";
+  process.env.APP_NAME = "gtm-os-test";
+  process.env.API_BASE_URL = "http://127.0.0.1";
+
+  const app = buildApp();
+  const request = createMockRequest({
+    method: "GET",
+    url: "/v1/career/plan"
+  });
+  const response = createMockResponse();
+
+  await app.requestHandler(request, response);
+  const body = JSON.parse(response.body);
+
+  assert.equal(response.statusCode, 200);
+  assert.ok(Array.isArray(body.data.roleSuggestions));
+  assert.ok(body.data.roleSuggestions[0].title.length > 0);
+  assert.ok(Array.isArray(body.data.companyMatches));
+  assert.ok(body.data.companyMatches[0].source);
 });

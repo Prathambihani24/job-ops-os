@@ -2,6 +2,7 @@ import type {
   DashboardHighlight,
   DashboardOverview
 } from "@gtm-os/types";
+import { QuickLaunchPanel } from "./quick-launch-panel";
 
 type DashboardShellProps = {
   highlights: DashboardHighlight[];
@@ -12,7 +13,13 @@ export function DashboardShell({
   highlights,
   overview
 }: DashboardShellProps) {
-  const { summary, recentApplications, pipelineStages, nextActions } = overview;
+  const {
+    summary,
+    recentApplications,
+    pipelineStages,
+    nextActions,
+    careerPlan
+  } = overview;
 
   return (
     <main className="mx-auto flex min-h-screen max-w-7xl flex-col gap-8 px-6 py-10 lg:px-10">
@@ -63,6 +70,70 @@ export function DashboardShell({
         </article>
       </section>
 
+      <section className="grid gap-6 lg:grid-cols-[1fr_1fr]">
+        <article className="rounded-[2rem] border border-slate-200 bg-white/85 p-6 shadow-card">
+          <p className="text-sm uppercase tracking-[0.2em] text-steel">AI role suggestions</p>
+          <h2 className="mt-2 text-2xl font-semibold text-ink">Best-fit roles for your resume</h2>
+          <p className="mt-3 text-sm leading-7 text-steel">
+            These are ranked from your social media, marketing, CRM, and lead generation experience.
+          </p>
+          <div className="mt-6 space-y-4">
+            {careerPlan.roleSuggestions.map((role) => (
+              <div key={role.title} className="rounded-3xl bg-slate-50 p-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="font-medium text-ink">{role.title}</p>
+                    <p className="mt-1 text-sm text-steel">{role.summary}</p>
+                  </div>
+                  <span className="rounded-full bg-clay/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-clay">
+                    {role.fitScore}%
+                  </span>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {role.searchQueries.map((query) => (
+                    <span
+                      key={query}
+                      className="rounded-full bg-white px-3 py-1 text-xs text-steel"
+                    >
+                      {query}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </article>
+
+        <article className="rounded-[2rem] border border-slate-200 bg-white/85 p-6 shadow-card">
+          <p className="text-sm uppercase tracking-[0.2em] text-steel">Apollo company search</p>
+          <h2 className="mt-2 text-2xl font-semibold text-ink">Companies to target next</h2>
+          <p className="mt-3 text-sm leading-7 text-steel">
+            Apollo is modeled as the sourcing layer here, with a free fallback list until the API key is connected.
+          </p>
+          <div className="mt-6 space-y-4">
+            {careerPlan.companyMatches.map((company) => (
+              <div key={company.id} className="rounded-3xl bg-slate-50 p-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="font-medium text-ink">{company.name}</p>
+                    <p className="mt-1 text-sm text-steel">
+                      {company.targetRole} - {company.stage}
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-moss/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-moss">
+                    {company.fitScore}%
+                  </span>
+                </div>
+                <p className="mt-3 text-sm text-steel">{company.reason}</p>
+                <p className="mt-2 text-xs uppercase tracking-[0.2em] text-steel">
+                  {company.hiringSignal}
+                </p>
+              </div>
+            ))}
+          </div>
+        </article>
+      </section>
+
       <section className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <article className="rounded-[2rem] border border-slate-200 bg-white/85 p-6 shadow-card">
           <div className="flex items-center justify-between">
@@ -110,6 +181,8 @@ export function DashboardShell({
           </div>
         </article>
       </section>
+
+      <QuickLaunchPanel />
 
       <section className="rounded-[2rem] border border-slate-200 bg-white/85 p-6 shadow-card">
         <div className="flex items-center justify-between gap-4">
@@ -174,7 +247,7 @@ export function DashboardShell({
           <p className="text-sm uppercase tracking-[0.2em] text-steel">How the automation works</p>
           <h2 className="mt-2 text-2xl font-semibold text-ink">Tailor, send, and track</h2>
           <p className="mt-3 text-sm leading-7 text-steel">
-            The workflow should ingest a job posting, tailor the resume to the role, draft the outreach message to the point of contact, submit the application, and write the outcome back to the dashboard.
+            The workflow should first suggest the best roles from your resume, then use Apollo to source companies, tailor the resume to the role, draft the outreach message to the point of contact, submit the application, and write the outcome back to the dashboard.
           </p>
           <p className="mt-4 text-sm leading-7 text-steel">
             When email credentials are connected, the same flow can send directly. Until then, it still produces the ready-to-send draft and keeps the pipeline visible.
