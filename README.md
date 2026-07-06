@@ -4,6 +4,16 @@ This repository is a free-first GTM engineering portfolio project designed to he
 
 The product vision is an AI-powered GTM operating system that starts with your job search and expands into reusable workflows for sales, recruiting, partnerships, community growth, investor CRM, and founder outreach.
 
+## Personalized use case
+
+This repo is also wired around your own resume. It can:
+
+- suggest the best-fit roles from your background
+- use Apollo-style company discovery to find matching target companies
+- tailor the resume for each role
+- draft outreach to the point of contact
+- track application outcomes on the dashboard
+
 ## Current milestone
 
 The repo now includes:
@@ -13,6 +23,7 @@ The repo now includes:
 - reusable workspace packages for config, shared domain data, types, and provider interfaces
 - a first PostgreSQL schema draft and seed data
 - a resume tailoring and application-launch workflow
+- a role recommendation and company discovery flow based on your resume
 - live dashboard reading from Supabase when credentials are available
 - an initial n8n workflow runbook
 
