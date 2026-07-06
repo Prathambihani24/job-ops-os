@@ -1,73 +1,37 @@
 # AI-Powered GTM Operating System
 
-This repository is a free-first GTM engineering portfolio project designed to help you become employable for GTM Engineer, GTM Associate, and AI operations roles at modern startups.
+A portfolio-ready command center for pipeline visibility, AI research, outreach drafting, and repeatable GTM workflows.
 
-The product vision is an AI-powered GTM operating system that starts with your job search and expands into reusable workflows for sales, recruiting, partnerships, community growth, investor CRM, and founder outreach.
+## Project Structure
 
-## Personalized use case
+- apps/api/ → Lightweight API server
+- apps/web/ → Next.js dashboard frontend
+- packages/ → Reusable domain logic and types
+- database/ → PostgreSQL schema (Supabase)
+- workflows/ → n8n automation runbooks
+- docs/ → Architecture docs and setup guides
 
-This repo is also wired around your own resume. It can:
+## Quick Start
 
-- suggest the best-fit roles from your background
-- use Apollo-style company discovery to find matching target companies
-- tailor the resume for each role
-- draft outreach to the point of contact
-- track application outcomes on the dashboard
-
-## Current milestone
-
-The repo now includes:
-
-- a Next.js dashboard shell in `apps/web`
-- a lightweight API prototype in `apps/api`
-- reusable workspace packages for config, shared domain data, types, and provider interfaces
-- a first PostgreSQL schema draft and seed data
-- a resume tailoring and application-launch workflow
-- a role recommendation and company discovery flow based on your resume
-- live dashboard reading from Supabase when credentials are available
-- an initial n8n workflow runbook
-
-## Why this architecture
-
-- `apps/` holds deployable surfaces
-- `packages/` holds reusable domain logic and interfaces
-- `database/` holds schema and seed assets
-- `workflows/` holds automation runbooks and future n8n exports
-- `docs/` explains architecture, setup, and roadmap decisions
-
-This separation matters because GTM systems change providers often. Swapping Slack for Discord or HubSpot for Salesforce should not require rewriting the whole application.
-
-## Quick start
-
-```bash
+npm install
 cp .env.example .env
-node ./scripts/check-env.mjs
-npm run test --workspace @gtm-os/config
-node --test ./apps/api/test/**/*.test.js
-npm run build:web
-```
-
-## Local development
-
-```bash
 npm run dev:api
 npm run dev:web
-```
 
-## Learning value
+## Documentation
 
-This repo is intentionally designed to demonstrate:
+- [Architecture](docs/architecture/phase-1-architecture-refactor.md)
+- [Setup Guide](docs/runbooks/setup-guide.md)
+- [API Spec](docs/api/openapi.yaml)
 
-- provider abstraction and clean architecture
-- workflow-driven product design
-- AI-assisted GTM thinking
-- startup-oriented prioritization
-- technical communication and documentation discipline
+## Tech Stack
 
-## Key documents
+Next.js 15, TypeScript, PostgreSQL, Supabase, n8n
 
-- [Architecture Refactor](/Users/pratham/Documents/Codex/2026-07-03/computer-plugin-computer-use-openai-bundled-3/docs/architecture/phase-1-architecture-refactor.md)
-- [Architecture Diagrams](/Users/pratham/Documents/Codex/2026-07-03/computer-plugin-computer-use-openai-bundled-3/docs/architecture/diagrams.md)
-- [Milestone 2 Foundation](/Users/pratham/Documents/Codex/2026-07-03/computer-plugin-computer-use-openai-bundled-3/docs/roadmap/milestone-2-foundation.md)
-- [Milestone 3 Application Automation](/Users/pratham/Documents/Codex/2026-07-03/computer-plugin-computer-use-openai-bundled-3/docs/roadmap/milestone-3-application-automation.md)
-- [Setup Guide](/Users/pratham/Documents/Codex/2026-07-03/computer-plugin-computer-use-openai-bundled-3/docs/runbooks/setup-guide.md)
+## Live Demo
+
+https://job-ops-os.vercel.app
+
+## License
+
+MIT
