@@ -16,8 +16,8 @@
     "build": "next build",
     "start": "next start",
     "check-env": "node ./scripts/check-env.mjs",
-    "dev:api": "node ./apps/api/src/server.js",
-    "start:api": "node ./apps/api/src/server.js",
+    "dev:api": "node --env-file=.env ./apps/api/src/server.js",
+    "start:api": "node --env-file=.env ./apps/api/src/server.js",
     "test": "node --test ./apps/api/test/**/*.test.js",
     "test:config": "npm --workspace @gtm-os/config test"
   },
