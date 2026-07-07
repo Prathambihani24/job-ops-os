@@ -29,6 +29,6 @@ export function loadConfig() {
     anthropicApiKey: process.env.ANTHROPIC_API_KEY ?? "",
     anthropicModel: process.env.ANTHROPIC_MODEL ?? "claude-sonnet-5",
     groqApiKey: process.env.GROQ_API_KEY ?? "",
-    groqModel: process.env.GROQ_MODEL ?? "llama-3.3-70b-versatile"
+    groqModel: process.env.GROQ_MODEL ?? "openai/gpt-oss-120b"
   };
 }
