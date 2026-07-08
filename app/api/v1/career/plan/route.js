@@ -3,6 +3,6 @@ import { buildCareerPlan } from "../../../../../apps/api/src/services/dashboard-
 
 export async function GET() {
   return NextResponse.json({
-    data: buildCareerPlan()
+    data: await buildCareerPlan()
   });
 }

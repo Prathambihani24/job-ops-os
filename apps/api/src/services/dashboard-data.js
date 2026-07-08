@@ -36,11 +36,11 @@ export async function buildDashboardOverview() {
 
   return {
     ...overview,
-    careerPlan: careerPlanner.plan()
+    careerPlan: await careerPlanner.plan()
   };
 }
 
-export function buildCareerPlan() {
+export async function buildCareerPlan() {
   const { careerPlanner } = createDashboardDataServices();
   return careerPlanner.plan();
 }
@@ -48,7 +48,7 @@ export function buildCareerPlan() {
 export async function launchApplicationFlow(jobPosting = sampleJobPosting) {
   const { tracker, careerPlanner, logger } = createDashboardDataServices();
   const result = await tracker.tailorAndDraft(jobPosting);
-  const careerPlan = careerPlanner.plan();
+  const careerPlan = await careerPlanner.plan();
 
   logger.info("Application launched.", {
     company: jobPosting.company,

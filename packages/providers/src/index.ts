@@ -85,8 +85,15 @@ export class ManualLeadProvider implements LeadProvider {
   }
 }
 
+const APOLLO_ORG_SEARCH_URL = "https://api.apollo.io/api/v1/organizations/search";
+
 export class ApolloCompanyDiscoveryProvider implements CompanyDiscoveryProvider {
   name = "apollo";
+  private apiKey: string;
+
+  constructor(apiKey: string) {
+    this.apiKey = apiKey;
+  }
 
   async findCompanies(input: {
     roleTitle: string;
@@ -99,16 +106,58 @@ export class ApolloCompanyDiscoveryProvider implements CompanyDiscoveryProvider 
     fitScore: number;
     source: string;
   }>> {
-    void input;
-    return [];
+    if (!this.apiKey) {
+      return [];
+    }
+
+    const perPage = input.limit ?? 5;
+    const keyword = input.searchQueries[0] ?? input.roleTitle;
+
+    const response = await fetch(APOLLO_ORG_SEARCH_URL, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": this.apiKey
+      },
+      body: JSON.stringify({
+        q_organization_keyword_tags: [keyword],
+        page: 1,
+        per_page: perPage
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Apollo organization search failed: ${response.status} ${errorText}`);
+    }
+
+    const payload = await response.json();
+    const organizations = payload.organizations ?? payload.accounts ?? [];
+
+    return organizations.map((org: Record<string, unknown>, index: number) => ({
+      id: String(org.id ?? `apollo_${index}`),
+      name: String(org.name ?? "Unknown company"),
+      stage: String(org.latest_funding_stage ?? org.funding_stage ?? "unknown"),
+      fitScore: 80,
+      source: "apollo"
+    }));
   }
 
   async getStatus(): Promise<ProviderStatus> {
+    if (!this.apiKey) {
+      return {
+        provider: this.name,
+        health: "degraded",
+        checkedAt: new Date().toISOString(),
+        notes: "APOLLO_API_KEY is not set. Company sourcing falls back to a static list until it's configured."
+      };
+    }
+
     return {
       provider: this.name,
-      health: "degraded",
+      health: "healthy",
       checkedAt: new Date().toISOString(),
-      notes: "Connect APOLLO_API_KEY or the Apollo MCP integration to return live company sourcing results."
+      notes: "APOLLO_API_KEY is set. Live organization search is used for company sourcing."
     };
   }
 }

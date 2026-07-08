@@ -1,5 +1,44 @@
 import { mockCompanies } from "../data/mock-companies.js";
 
+const APOLLO_ORG_SEARCH_URL = "https://api.apollo.io/api/v1/organizations/search";
+
+async function findCompaniesViaApollo(apiKey, roleTitle, searchQueries, limit) {
+  const keyword = searchQueries[0] ?? roleTitle;
+
+  const response = await fetch(APOLLO_ORG_SEARCH_URL, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-api-key": apiKey
+    },
+    body: JSON.stringify({
+      q_organization_keyword_tags: [keyword],
+      page: 1,
+      per_page: limit
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Apollo organization search failed: ${response.status} ${errorText}`);
+  }
+
+  const payload = await response.json();
+  const organizations = payload.organizations ?? payload.accounts ?? [];
+
+  return organizations.map((org, index) => ({
+    id: String(org.id ?? `apollo_${index}`),
+    name: org.name ?? "Unknown company",
+    domain: org.primary_domain ?? org.website_url ?? null,
+    linkedinUrl: org.linkedin_url ?? null,
+    stage: org.latest_funding_stage ?? org.funding_stage ?? "unknown",
+    fitScore: 80,
+    hiringSignal: "Sourced from Apollo's live organization database.",
+    personalizedObservation: "Verify this company's current hiring status before reaching out.",
+    source: "apollo"
+  }));
+}
+
 const roleCatalog = [
   {
     title: "Social Media Manager",
@@ -124,29 +163,65 @@ export function createCareerPlanner({ profile, config, logger }) {
     .map((role) => scoreRole(profileText, role))
     .sort((a, b) => b.fitScore - a.fitScore);
 
-  const providerStatus = config.apolloApiKey
-    ? {
-        provider: "apollo",
-        health: "healthy",
-        checkedAt: new Date().toISOString(),
-        notes: "Apollo credentials are available, so the company search can use live sourcing."
-      }
-    : {
-        provider: "apollo",
-        health: "degraded",
-        checkedAt: new Date().toISOString(),
-        notes: "Apollo is optional here. The planner uses a free fallback company list until the API key is connected."
-      };
-
-  const companyMatches = mockCompanies
-    .map((company) => scoreCompany(company, roleSuggestions, profileText))
-    .sort((a, b) => b.fitScore - a.fitScore)
-    .slice(0, 5);
-
   return {
-    plan() {
+    async plan() {
+      const topRole = roleSuggestions[0];
+      let companyMatches;
+      let providerStatus;
+
+      if (config.apolloApiKey && topRole) {
+        try {
+          const liveCompanies = await findCompaniesViaApollo(
+            config.apolloApiKey,
+            topRole.title,
+            topRole.searchQueries,
+            5
+          );
+
+          companyMatches = liveCompanies
+            .map((company) => scoreCompany(company, roleSuggestions, profileText))
+            .sort((a, b) => b.fitScore - a.fitScore)
+            .slice(0, 5);
+
+          providerStatus = {
+            provider: "apollo",
+            health: "healthy",
+            checkedAt: new Date().toISOString(),
+            notes: `Live company search via Apollo returned ${liveCompanies.length} results for "${topRole.title}".`
+          };
+        } catch (error) {
+          logger.warn?.("Apollo organization search failed, falling back to static list.", {
+            error: error instanceof Error ? error.message : String(error)
+          });
+
+          companyMatches = mockCompanies
+            .map((company) => scoreCompany(company, roleSuggestions, profileText))
+            .sort((a, b) => b.fitScore - a.fitScore)
+            .slice(0, 5);
+
+          providerStatus = {
+            provider: "apollo",
+            health: "degraded",
+            checkedAt: new Date().toISOString(),
+            notes: "Apollo API call failed, showing a static fallback company list instead. Check APOLLO_API_KEY and Apollo API status."
+          };
+        }
+      } else {
+        companyMatches = mockCompanies
+          .map((company) => scoreCompany(company, roleSuggestions, profileText))
+          .sort((a, b) => b.fitScore - a.fitScore)
+          .slice(0, 5);
+
+        providerStatus = {
+          provider: "apollo",
+          health: "degraded",
+          checkedAt: new Date().toISOString(),
+          notes: "APOLLO_API_KEY is not set, so this is a static fallback company list, not live sourcing."
+        };
+      }
+
       logger.info("Career plan generated.", {
-        topRole: roleSuggestions[0]?.title,
+        topRole: topRole?.title,
         companyCount: companyMatches.length,
         apolloStatus: providerStatus.health
       });

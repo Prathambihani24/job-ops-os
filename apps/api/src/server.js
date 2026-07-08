@@ -70,7 +70,7 @@ export function buildApp() {
 
   router.register("GET", "/v1/career/plan", async (_request, response) => {
     sendJson(response, 200, {
-      data: buildCareerPlan()
+      data: await buildCareerPlan()
     });
   });
 
