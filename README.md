@@ -1,37 +1,38 @@
-# AI-Powered GTM Operating System
+# 🚀 Job-Ops OS: The GTM Engineering Command Center
 
-A portfolio-ready command center for pipeline visibility, AI research, outreach drafting, and repeatable GTM workflows.
+Job-Ops OS is a comprehensive operating system designed for modern Growth and GTM (Go-To-Market) teams. It replaces fragmented spreadsheets and manual research with an AI-driven pipeline for lead discovery, deep research, and hyper-personalized outreach.
 
-## Project Structure
+## 🎯 The Problem It Solves
+Most GTM teams suffer from "The Data Gap":
+- **Research Friction**: Manually browsing LinkedIn/Company sites takes hours per lead.
+- **Generic Outreach**: "I saw your company does X" is no longer enough to get a reply.
+- **Pipeline Blindness**: No real-time visibility into which research-led drafts are actually converting.
 
-- apps/api/ → Lightweight API server
-- apps/web/ → Next.js dashboard frontend
-- packages/ → Reusable domain logic and types
-- database/ → PostgreSQL schema (Supabase)
-- workflows/ → n8n automation runbooks
-- docs/ → Architecture docs and setup guides
+## 🛠️ The Solution
+Job-Ops OS automates the "Intelligence $\rightarrow$ Action" loop:
 
-## Quick Start
+1. **Intelligence (AI Research)**: Orchestrates multi-agent workflows to scrape company news, financial reports, and founder tweets to find a "trigger event."
+2. **Personalization (Dynamic Drafting)**: Maps trigger events to specific value propositions to generate high-conversion drafts.
+3. **Execution (Pipeline Management)**: A central dashboard to track lead status, research depth, and outreach history.
 
+## 🏗️ System Architecture
+
+- **Frontend**: Next.js 15 + Tailwind CSS (High-performance GTM dashboard).
+- **Backend**: TypeScript + Node.js API.
+- **Database**: PostgreSQL (via Supabase) for structured lead and research storage.
+- **Automation**: n8n workflows for orchestrating AI agents and external API calls.
+
+## 🚀 Key Features
+- **Deep Research Engine**: Automates the discovery of company "pain points."
+- **Hyper-Personalized Drafts**: AI-generated outreach based on real-time signals.
+- **GTM Visibility**: Real-time pipeline tracking for high-ticket AI startup roles.
+
+## 📖 Quick Start
+```bash
 npm install
 cp .env.example .env
-npm run dev:api
 npm run dev
+```
 
-## Documentation
-
-- [Architecture](docs/architecture/phase-1-architecture-refactor.md)
-- [Setup Guide](docs/runbooks/setup-guide.md)
-- [API Spec](docs/api/openapi.yaml)
-
-## Tech Stack
-
-Next.js 15, TypeScript, PostgreSQL, Supabase, n8n
-
-## Live Demo
-
-https://job-ops-os.vercel.app
-
-## License
-
-MIT
+## 🌐 Live Demo
+[Visit Job-Ops OS](https://job-ops-os.vercel.app)
