@@ -1,38 +1,73 @@
-# 🚀 Job-Ops OS: The GTM Engineering Command Center
+# AI-Powered GTM Operating System
 
-Job-Ops OS is a comprehensive operating system designed for modern Growth and GTM (Go-To-Market) teams. It replaces fragmented spreadsheets and manual research with an AI-driven pipeline for lead discovery, deep research, and hyper-personalized outreach.
+This repository is a free-first GTM engineering portfolio project designed to help you become employable for GTM Engineer, GTM Associate, and AI operations roles at modern startups.
 
-## 🎯 The Problem It Solves
-Most GTM teams suffer from "The Data Gap":
-- **Research Friction**: Manually browsing LinkedIn/Company sites takes hours per lead.
-- **Generic Outreach**: "I saw your company does X" is no longer enough to get a reply.
-- **Pipeline Blindness**: No real-time visibility into which research-led drafts are actually converting.
+The product vision is an AI-powered GTM operating system that starts with your job search and expands into reusable workflows for sales, recruiting, partnerships, community growth, investor CRM, and founder outreach.
 
-## 🛠️ The Solution
-Job-Ops OS automates the "Intelligence $\rightarrow$ Action" loop:
+## Personalized use case
 
-1. **Intelligence (AI Research)**: Orchestrates multi-agent workflows to scrape company news, financial reports, and founder tweets to find a "trigger event."
-2. **Personalization (Dynamic Drafting)**: Maps trigger events to specific value propositions to generate high-conversion drafts.
-3. **Execution (Pipeline Management)**: A central dashboard to track lead status, research depth, and outreach history.
+This repo is also wired around your own resume. It can:
 
-## 🏗️ System Architecture
+- suggest the best-fit roles from your background
+- use Apollo-style company discovery to find matching target companies
+- tailor the resume for each role
+- draft outreach to the point of contact
+- track application outcomes on the dashboard
 
-- **Frontend**: Next.js 15 + Tailwind CSS (High-performance GTM dashboard).
-- **Backend**: TypeScript + Node.js API.
-- **Database**: PostgreSQL (via Supabase) for structured lead and research storage.
-- **Automation**: n8n workflows for orchestrating AI agents and external API calls.
+## Current milestone
 
-## 🚀 Key Features
-- **Deep Research Engine**: Automates the discovery of company "pain points."
-- **Hyper-Personalized Drafts**: AI-generated outreach based on real-time signals.
-- **GTM Visibility**: Real-time pipeline tracking for high-ticket AI startup roles.
+The repo now includes:
 
-## 📖 Quick Start
+- a Next.js dashboard shell in `apps/web`
+- a lightweight API prototype in `apps/api`
+- reusable workspace packages for config, shared domain data, types, and provider interfaces
+- a first PostgreSQL schema draft and seed data
+- a resume tailoring and application-launch workflow
+- a role recommendation and company discovery flow based on your resume
+- live dashboard reading from Supabase when credentials are available
+- an initial n8n workflow runbook
+
+## Why this architecture
+
+- `apps/` holds deployable surfaces
+- `packages/` holds reusable domain logic and interfaces
+- `database/` holds schema and seed assets
+- `workflows/` holds automation runbooks and future n8n exports
+- `docs/` explains architecture, setup, and roadmap decisions
+
+This separation matters because GTM systems change providers often. Swapping Slack for Discord or HubSpot for Salesforce should not require rewriting the whole application.
+
+## Quick start
+
 ```bash
-npm install
 cp .env.example .env
-npm run dev
+node ./scripts/check-env.mjs
+npm run test --workspace @gtm-os/config
+node --test ./apps/api/test/**/*.test.js
+npm run build:web
 ```
 
-## 🌐 Live Demo
-[Visit Job-Ops OS](https://job-ops-os.vercel.app)
+## Local development
+
+```bash
+npm run dev:api
+npm run dev:web
+```
+
+## Learning value
+
+This repo is intentionally designed to demonstrate:
+
+- provider abstraction and clean architecture
+- workflow-driven product design
+- AI-assisted GTM thinking
+- startup-oriented prioritization
+- technical communication and documentation discipline
+
+## Key documents
+
+- [Architecture Refactor](/Users/pratham/Documents/Codex/2026-07-03/computer-plugin-computer-use-openai-bundled-3/docs/architecture/phase-1-architecture-refactor.md)
+- [Architecture Diagrams](/Users/pratham/Documents/Codex/2026-07-03/computer-plugin-computer-use-openai-bundled-3/docs/architecture/diagrams.md)
+- [Milestone 2 Foundation](/Users/pratham/Documents/Codex/2026-07-03/computer-plugin-computer-use-openai-bundled-3/docs/roadmap/milestone-2-foundation.md)
+- [Milestone 3 Application Automation](/Users/pratham/Documents/Codex/2026-07-03/computer-plugin-computer-use-openai-bundled-3/docs/roadmap/milestone-3-application-automation.md)
+- [Setup Guide](/Users/pratham/Documents/Codex/2026-07-03/computer-plugin-computer-use-openai-bundled-3/docs/runbooks/setup-guide.md)

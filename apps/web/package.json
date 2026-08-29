@@ -1,0 +1,26 @@
+{
+  "name": "@gtm-os/web",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@gtm-os/config": "file:../../packages/config",
+    "@gtm-os/providers": "file:../../packages/providers",
+    "@gtm-os/shared-domain": "file:../../packages/shared-domain",
+    "@gtm-os/types": "file:../../packages/types",
+    "next": "15.5.20",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "tailwindcss": "3.4.17",
+    "postcss": "8.5.6",
+    "autoprefixer": "10.4.20",
+    "typescript": "5.8.3",
+    "@types/node": "24.0.0",
+    "@types/react": "19.0.0",
+    "@types/react-dom": "19.0.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "lint": "next lint"
+  }
+}

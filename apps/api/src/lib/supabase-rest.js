@@ -69,3 +69,30 @@ export async function saveResumeProfile(config, profile) {
     body: JSON.stringify(profile)
   });
 }
+
+export async function upsertDiscoveredJobs(config, jobs) {
+  if (!jobs.length) return [];
+
+  return request(config, "/rest/v1/discovered_jobs", {
+    method: "POST",
+    headers: {
+      Prefer: "resolution=merge-duplicates,return=representation",
+      "Content-Profile": "public",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(jobs.map((job) => ({
+      source: job.source,
+      source_job_id: job.sourceId,
+      title: job.title,
+      company: job.company,
+      location: job.location,
+      description: job.description,
+      job_url: job.url,
+      fit_score: job.fitScore,
+      reasons: job.reasons,
+      gaps: job.gaps,
+      discovered_at: job.discoveredAt,
+      updated_at: new Date().toISOString()
+    })))
+  });
+}
