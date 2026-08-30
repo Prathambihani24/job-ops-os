@@ -1,7 +1,7 @@
 import process from "node:process";
 
 function readEnv(name, fallback = undefined) {
-  const value = process.env[name] ?? fallback;
+  const value = process.env[name] || fallback;
 
   if (value === undefined || value === "") {
     throw new Error(`Missing required environment variable: ${name}`);
@@ -26,10 +26,10 @@ export function loadConfig() {
     apolloApiKey: process.env.APOLLO_API_KEY ?? "",
     clayApiKey: process.env.CLAY_API_KEY ?? "",
     cronSecret: process.env.CRON_SECRET ?? "",
-    aiProvider: process.env.AI_PROVIDER ?? "ollama",
+    aiProvider: process.env.AI_PROVIDER || "ollama",
     aiApiKey: process.env.AI_API_KEY ?? process.env.OPENAI_API_KEY ?? "",
-    aiBaseUrl: process.env.AI_BASE_URL ?? process.env.OLLAMA_BASE_URL ?? "http://127.0.0.1:11434/v1",
-    aiModel: process.env.AI_MODEL ?? process.env.OLLAMA_MODEL ?? "qwen3:8b",
+    aiBaseUrl: process.env.AI_BASE_URL || process.env.OLLAMA_BASE_URL || "http://127.0.0.1:11434/v1",
+    aiModel: process.env.AI_MODEL || process.env.OLLAMA_MODEL || "qwen3:8b",
     greenhouseApiKey: process.env.GREENHOUSE_API_KEY ?? "",
     greenhouseBoardTokens: splitCsv(process.env.GREENHOUSE_BOARD_TOKENS),
     leverApiKey: process.env.LEVER_API_KEY ?? "",
