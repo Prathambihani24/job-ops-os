@@ -26,7 +26,7 @@ export function loadConfig() {
     apolloApiKey: process.env.APOLLO_API_KEY ?? "",
     clayApiKey: process.env.CLAY_API_KEY ?? "",
     cronSecret: process.env.CRON_SECRET ?? "",
-    aiProvider: process.env.AI_PROVIDER || "ollama",
+    aiProvider: process.env.AI_PROVIDER || (process.env.OLLAMA_BASE_URL ? "ollama" : "heuristic"),
     aiApiKey: process.env.AI_API_KEY ?? process.env.OPENAI_API_KEY ?? "",
     aiBaseUrl: process.env.AI_BASE_URL || process.env.OLLAMA_BASE_URL || "http://127.0.0.1:11434/v1",
     aiModel: process.env.AI_MODEL || process.env.OLLAMA_MODEL || "qwen3:8b",

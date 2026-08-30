@@ -74,6 +74,27 @@ export function tailorResume(profile, jobPosting) {
   };
 }
 
+export function resumeToMarkdown(profile, tailoredResume) {
+  const sections = tailoredResume.sections
+    .map((section) => `### ${section.title}\n${section.bullets.map((bullet) => `- ${bullet.tailored}`).join("\n")}`)
+    .join("\n\n");
+
+  return [
+    `# ${profile.fullName}`,
+    tailoredResume.headline,
+    `${profile.email} · ${profile.location}`,
+    "",
+    "## Profile",
+    tailoredResume.summary,
+    "",
+    sections,
+    "",
+    `## Skills\n${tailoredResume.keywordMatches.length ? tailoredResume.keywordMatches.join(" · ") : profile.skills.join(" · ")}`,
+    "",
+    `## Education\n${profile.education.map((item) => `- ${item}`).join("\n")}`
+  ].join("\n");
+}
+
 export function buildOutreachMessage(profile, jobPosting, tailoredResume) {
   const contactName = jobPosting.contact?.name ?? "Hiring team";
   const subject = `Application for ${jobPosting.title} - ${profile.fullName}`;

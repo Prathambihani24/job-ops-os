@@ -1,4 +1,4 @@
-import { tailorResume, buildOutreachMessage } from "./resume-tailoring.js";
+import { tailorResume, buildOutreachMessage, resumeToMarkdown } from "./resume-tailoring.js";
 import {
   listJobApplications,
   saveResumeProfile,
@@ -28,6 +28,7 @@ function normalizeRow(row) {
 }
 
 export function createApplicationTracker({ profile, logger, config }) {
+  const hasLiveStorage = Boolean(config.supabaseUrl && config.supabaseServiceRoleKey);
   const fallbackApplications = [
     {
       id: "app_001",
@@ -79,7 +80,7 @@ export function createApplicationTracker({ profile, logger, config }) {
   async function loadApplications() {
     try {
       const rows = await listJobApplications(config, 10);
-      if (Array.isArray(rows) && rows.length > 0) {
+      if (Array.isArray(rows)) {
         return rows.map(normalizeRow);
       }
     } catch (error) {
@@ -88,7 +89,7 @@ export function createApplicationTracker({ profile, logger, config }) {
       });
     }
 
-    return fallbackApplications;
+    return hasLiveStorage ? [] : fallbackApplications;
   }
 
   return {
@@ -135,9 +136,10 @@ export function createApplicationTracker({ profile, logger, config }) {
         ]
       };
     },
-    async tailorAndDraft(jobPosting) {
-      const tailoredResume = tailorResume(profile, jobPosting);
-      const outreach = buildOutreachMessage(profile, jobPosting, tailoredResume);
+    async tailorAndDraft(jobPosting, generated = {}) {
+      const tailoredResume = generated.tailoredResume ?? tailorResume(profile, jobPosting);
+      const outreach = generated.outreach ?? buildOutreachMessage(profile, jobPosting, tailoredResume);
+      const tailoredResumeMarkdown = resumeToMarkdown(profile, tailoredResume);
 
       logger.info("Resume tailored.", {
         company: jobPosting.company,
@@ -145,14 +147,16 @@ export function createApplicationTracker({ profile, logger, config }) {
         keywords: tailoredResume.keywordMatches
       });
 
+      let resumeProfileId = null;
       try {
-        await saveResumeProfile(config, {
-          profile_name: `${profile.fullName} Master Resume`,
+        const savedProfile = await saveResumeProfile(config, {
+          profile_name: `${jobPosting.title} Resume · ${new Date().toLocaleDateString("en-CA")}`,
           owner_name: profile.fullName,
-          source_markdown: profile.summary,
+          source_markdown: tailoredResumeMarkdown,
           skills: profile.skills,
-          experience: profile.experience
+          experience: tailoredResume.sections
         });
+        resumeProfileId = Array.isArray(savedProfile) ? savedProfile[0]?.id ?? null : savedProfile?.id ?? null;
       } catch (error) {
         logger.warn("Could not persist resume profile.", {
           errorMessage: error.message
@@ -174,7 +178,8 @@ export function createApplicationTracker({ profile, logger, config }) {
         next_step: jobPosting.contact?.email
           ? "Send email and track response"
           : "Find the right contact and send the tailored draft",
-        tailored_resume_markdown: tailoredResume.summary,
+        resume_profile_id: resumeProfileId,
+        tailored_resume_markdown: tailoredResumeMarkdown,
         outreach_subject: outreach.subject,
         outreach_body: outreach.text,
         updated_at: nowIso()

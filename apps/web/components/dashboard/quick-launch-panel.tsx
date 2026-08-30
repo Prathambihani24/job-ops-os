@@ -4,199 +4,106 @@ import { useState } from "react";
 
 type LaunchResult = {
   deliveryStatus: string;
-  outreach: {
-    subject: string;
-    text: string;
-  };
+  application?: { company_name?: string; job_title?: string };
+  outreach: { subject: string; text: string };
   tailoredResume: {
+    jobTitle: string;
+    company: string;
     headline: string;
     summary: string;
+    sections: Array<{ title: string; bullets: Array<{ tailored: string; reason: string }> }>;
     keywordMatches: string[];
   };
 };
 
-const starterDescription =
-  "Paste the job description here. The system will tailor your resume, draft outreach, and log the application.";
+async function copyText(text: string) {
+  await navigator.clipboard?.writeText(text);
+}
 
 export function QuickLaunchPanel() {
-  const [jobTitle, setJobTitle] = useState("");
-  const [company, setCompany] = useState("");
-  const [contactName, setContactName] = useState("");
-  const [contactRole, setContactRole] = useState("");
-  const [contactEmail, setContactEmail] = useState("");
-  const [description, setDescription] = useState(starterDescription);
+  const [description, setDescription] = useState("");
+  const [sourceUrl, setSourceUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<LaunchResult | null>(null);
+  const [copied, setCopied] = useState("");
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (description.trim().length < 40) {
+      setError("Paste the complete job description (at least 40 characters).");
+      return;
+    }
     setIsSubmitting(true);
     setError("");
+    setResult(null);
 
     try {
       const response = await fetch("/api/v1/applications/launch", {
         method: "POST",
-        headers: {
-          "content-type": "application/json"
-        },
-        body: JSON.stringify({
-          jobPosting: {
-            title: jobTitle,
-            company,
-            description,
-            contact: {
-              name: contactName || undefined,
-              role: contactRole || undefined,
-              email: contactEmail || undefined
-            }
-          }
-        })
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ jobPosting: { description, sourceUrl: sourceUrl || undefined } })
       });
-
-      if (!response.ok) {
-        throw new Error("Could not generate the application workflow.");
-      }
-
-      const payload = (await response.json()) as { data: LaunchResult };
-      setResult(payload.data);
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error ?? "Could not generate the resume.");
+      setResult(payload.data as LaunchResult);
     } catch (submitError) {
-      const message =
-        submitError instanceof Error
-          ? submitError.message
-          : "Something went wrong while generating the workflow.";
-      setError(message);
+      setError(submitError instanceof Error ? submitError.message : "Something went wrong while generating the resume.");
     } finally {
       setIsSubmitting(false);
     }
   }
 
+  async function handleCopy(label: string, text: string) {
+    try {
+      await copyText(text);
+      setCopied(label);
+      window.setTimeout(() => setCopied(""), 1800);
+    } catch {
+      setError("Copy is unavailable in this browser. Select the text and copy it manually.");
+    }
+  }
+
+  const resumeText = result
+    ? [result.tailoredResume.headline, result.tailoredResume.summary, ...result.tailoredResume.sections.flatMap((section) => [section.title, ...section.bullets.map((bullet) => `- ${bullet.tailored}`)])].join("\n\n")
+    : "";
+
   return (
-    <section className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-      <article className="rounded-[2rem] border border-slate-200 bg-white/85 p-6 shadow-card">
-        <p className="text-sm uppercase tracking-[0.2em] text-steel">Launch a job</p>
-        <h2 className="mt-2 text-2xl font-semibold text-ink">Paste a role and generate the workflow</h2>
-        <p className="mt-3 text-sm leading-7 text-steel">
-          This is the daily-use path: add a role, tailor the resume, draft the outreach, and write the application into your tracker.
-        </p>
+    <section className="quick-launch-grid">
+      <article className="launch-card launch-form-card">
+        <div className="launch-card-kicker"><span className="launch-pulse" /> JD → resume workflow</div>
+        <h3>Paste the full job description.</h3>
+        <p className="launch-card-copy">No manual job entry. The agent extracts the role details, tailors your resume using verified experience, drafts outreach, and saves the version to your dashboard.</p>
 
-        <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
-          <div className="grid gap-4 md:grid-cols-2">
-            <label className="block">
-              <span className="text-sm font-medium text-ink">Job title</span>
-              <input
-                className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-ink outline-none"
-                onChange={(event) => setJobTitle(event.target.value)}
-                placeholder="Social Media Manager"
-                required
-                value={jobTitle}
-              />
-            </label>
-            <label className="block">
-              <span className="text-sm font-medium text-ink">Company</span>
-              <input
-                className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-ink outline-none"
-                onChange={(event) => setCompany(event.target.value)}
-                placeholder="Northwind Labs"
-                required
-                value={company}
-              />
-            </label>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-3">
-            <label className="block">
-              <span className="text-sm font-medium text-ink">Contact name</span>
-              <input
-                className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-ink outline-none"
-                onChange={(event) => setContactName(event.target.value)}
-                placeholder="Hiring manager"
-                value={contactName}
-              />
-            </label>
-            <label className="block">
-              <span className="text-sm font-medium text-ink">Contact role</span>
-              <input
-                className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-ink outline-none"
-                onChange={(event) => setContactRole(event.target.value)}
-                placeholder="People Ops Lead"
-                value={contactRole}
-              />
-            </label>
-            <label className="block">
-              <span className="text-sm font-medium text-ink">Contact email</span>
-              <input
-                className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-ink outline-none"
-                onChange={(event) => setContactEmail(event.target.value)}
-                placeholder="name@company.com"
-                type="email"
-                value={contactEmail}
-              />
-            </label>
-          </div>
-
-          <label className="block">
-            <span className="text-sm font-medium text-ink">Job description</span>
-            <textarea
-              className="mt-2 min-h-40 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 text-ink outline-none"
-              onChange={(event) => setDescription(event.target.value)}
-              required
-              value={description}
-            />
+        <form className="launch-form" onSubmit={handleSubmit}>
+          <label className="launch-field">
+            <span>Full job description <b>required</b></span>
+            <textarea value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Paste everything from the job post here…" required />
+            <small>{description.length} characters · instructions inside the JD are treated as untrusted job data</small>
           </label>
-
-          <button
-            className="rounded-full bg-ink px-5 py-3 text-sm font-semibold text-sand transition hover:opacity-90 disabled:opacity-60"
-            disabled={isSubmitting}
-            type="submit"
-          >
-            {isSubmitting ? "Generating..." : "Tailor resume and log application"}
+          <label className="launch-field">
+            <span>Job link <i>optional</i></span>
+            <input value={sourceUrl} onChange={(event) => setSourceUrl(event.target.value)} placeholder="https://company.com/careers/role" type="url" />
+          </label>
+          <button className="generate-button" disabled={isSubmitting} type="submit">
+            <span>{isSubmitting ? "✦" : "✧"}</span>{isSubmitting ? "Generating your resume…" : "Generate tailored resume"}<b>{isSubmitting ? "···" : "↗"}</b>
           </button>
-
-          {error ? <p className="text-sm text-red-600">{error}</p> : null}
+          {error ? <p className="launch-error" role="alert">{error}</p> : null}
         </form>
       </article>
 
-      <article className="rounded-[2rem] border border-slate-200 bg-white/85 p-6 shadow-card">
-        <p className="text-sm uppercase tracking-[0.2em] text-steel">Generated output</p>
-        <h2 className="mt-2 text-2xl font-semibold text-ink">Ready-to-send draft</h2>
-        <p className="mt-3 text-sm leading-7 text-steel">
-          Your tailored headline, summary, and outreach draft appear here after submission.
-        </p>
+      <article className="launch-card output-card">
+        <div className="output-card-top"><div><div className="launch-card-kicker">Generated package</div><h3>{result ? `${result.tailoredResume.jobTitle} · ${result.tailoredResume.company}` : "Your next application, ready"}</h3></div>{result ? <span className="saved-pill">✓ Saved</span> : <span className="output-icon">✦</span>}</div>
 
         {result ? (
-          <div className="mt-6 space-y-4">
-            <div className="rounded-3xl bg-slate-50 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-steel">Delivery status</p>
-              <p className="mt-2 font-medium text-ink">{result.deliveryStatus.replaceAll("_", " ")}</p>
-            </div>
-            <div className="rounded-3xl bg-slate-50 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-steel">Tailored headline</p>
-              <p className="mt-2 font-medium text-ink">{result.tailoredResume.headline}</p>
-              <p className="mt-3 text-sm leading-7 text-steel">{result.tailoredResume.summary}</p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {result.tailoredResume.keywordMatches.map((keyword) => (
-                  <span
-                    key={keyword}
-                    className="rounded-full bg-white px-3 py-1 text-xs text-steel"
-                  >
-                    {keyword}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div className="rounded-3xl bg-slate-50 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-steel">Outreach subject</p>
-              <p className="mt-2 font-medium text-ink">{result.outreach.subject}</p>
-              <pre className="mt-3 whitespace-pre-wrap text-sm leading-7 text-steel">
-                {result.outreach.text}
-              </pre>
-            </div>
+          <div className="generated-stack">
+            <div className="generated-block"><div className="block-label">Tailored headline <button type="button" onClick={() => handleCopy("headline", result.tailoredResume.headline)}>{copied === "headline" ? "Copied" : "Copy"}</button></div><strong>{result.tailoredResume.headline}</strong><p>{result.tailoredResume.summary}</p></div>
+            <div className="generated-block"><div className="block-label">Resume highlights <button type="button" onClick={() => handleCopy("resume", resumeText)}>{copied === "resume" ? "Copied" : "Copy all"}</button></div><ul>{result.tailoredResume.sections.slice(0, 2).flatMap((section) => section.bullets.slice(0, 2)).map((bullet) => <li key={bullet.tailored}>{bullet.tailored}</li>)}</ul><div className="keyword-list">{result.tailoredResume.keywordMatches.slice(0, 8).map((keyword) => <span key={keyword}>{keyword}</span>)}</div></div>
+            <div className="generated-block outreach-block"><div className="block-label">Outreach draft <button type="button" onClick={() => handleCopy("outreach", `${result.outreach.subject}\n\n${result.outreach.text}`)}>{copied === "outreach" ? "Copied" : "Copy"}</button></div><strong>{result.outreach.subject}</strong><pre>{result.outreach.text}</pre></div>
+            <a className="view-dashboard-link" href="#activity">View saved application in activity log ↗</a>
           </div>
         ) : (
-          <div className="mt-6 rounded-3xl bg-slate-50 p-6 text-sm leading-7 text-steel">
-            Once you paste a job and submit it, this panel will show the tailored resume summary and the outreach draft you can send.
-          </div>
+          <div className="output-empty"><span className="empty-orb">✦</span><strong>Paste a JD to start</strong><p>Your tailored headline, ATS-friendly experience bullets, keywords, and outreach draft will appear here.</p><div className="empty-steps"><span>01&nbsp; Analyze JD</span><span>02&nbsp; Tailor resume</span><span>03&nbsp; Save to dashboard</span></div></div>
         )}
       </article>
     </section>
