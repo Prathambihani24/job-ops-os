@@ -1,271 +1,67 @@
-import type {
-  DashboardHighlight,
-  DashboardOverview
-} from "@gtm-os/types";
+import type { DashboardHighlight, DashboardOverview } from "@gtm-os/types";
+import type { ReactNode } from "react";
 import { QuickLaunchPanel } from "./quick-launch-panel";
 
-type DashboardShellProps = {
-  highlights: DashboardHighlight[];
-  overview: DashboardOverview;
+type DashboardShellProps = { highlights: DashboardHighlight[]; overview: DashboardOverview };
+
+const icons = {
+  grid: "⌘", spark: "✦", briefcase: "▣", radar: "◉", check: "✓", arrow: "↗"
 };
 
-export function DashboardShell({
-  highlights,
-  overview
-}: DashboardShellProps) {
-  const {
-    summary,
-    recentApplications,
-    pipelineStages,
-    nextActions,
-    careerPlan
-  } = overview;
+function SectionLabel({ children }: { children: ReactNode }) {
+  return <p className="section-label">{children}</p>;
+}
 
+function StatCard({ label, value, detail, tone }: { label: string; value: number; detail: string; tone: string }) {
   return (
-    <main className="mx-auto flex min-h-screen max-w-7xl flex-col gap-8 px-6 py-10 lg:px-10">
-      <section className="rounded-[2rem] border border-white/70 bg-white/80 p-8 shadow-card backdrop-blur">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-clay">
-              Milestone 2 foundation
-            </p>
-            <h1 className="mt-3 text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
-              AI GTM Operating System
-            </h1>
-            <p className="mt-4 text-lg leading-8 text-steel">
-              A portfolio-ready command center for pipeline visibility, AI research,
-              outreach drafting, and repeatable GTM workflows.
-            </p>
-          </div>
-          <div className="rounded-3xl bg-ink px-6 py-5 text-sand">
-            <p className="text-sm uppercase tracking-[0.25em] text-sand/70">Focus</p>
-            <p className="mt-2 text-2xl font-semibold">Job search first</p>
-            <p className="mt-1 text-sm text-sand/80">
-              Architecture ready for sales, partnerships, recruiting, and founder outreach.
-            </p>
-          </div>
+    <article className={`stat-card ${tone}`}>
+      <div className="stat-card-top"><span className="stat-dot" /><span className="stat-label">{label}</span><span className="stat-arrow">{icons.arrow}</span></div>
+      <p className="stat-value">{value}</p>
+      <p className="stat-detail">{detail}</p>
+    </article>
+  );
+}
+
+export function DashboardShell({ highlights, overview }: DashboardShellProps) {
+  const { summary, recentApplications, pipelineStages, nextActions, careerPlan } = overview;
+  return (
+    <main className="app-shell">
+      <aside className="sidebar">
+        <div className="brand"><span className="brand-mark">J</span><span>job ops <em>os</em></span></div>
+        <div className="workspace-switcher"><span className="avatar avatar-coral">P</span><span><small>Workspace</small><strong>Pratham&apos;s HQ</strong></span><span className="chevron">⌄</span></div>
+        <nav className="side-nav" aria-label="Primary navigation">
+          <span className="nav-group-label">Workspace</span>
+          <a className="nav-item active" href="#overview"><span>{icons.grid}</span>Overview</a>
+          <a className="nav-item" href="#pipeline"><span>{icons.briefcase}</span>Applications <b>{summary.totalApplications}</b></a>
+          <a className="nav-item" href="#roles"><span>{icons.spark}</span>Role matches</a>
+          <a className="nav-item" href="#companies"><span>{icons.radar}</span>Companies</a>
+          <span className="nav-group-label nav-group-spaced">Automations</span>
+          <a className="nav-item" href="#launch"><span>✧</span>Application agent <i className="live-pill">Live</i></a>
+          <a className="nav-item" href="#activity"><span>◷</span>Activity log</a>
+        </nav>
+        <div className="sidebar-bottom"><div className="credits"><span className="pulse-dot" /><span><strong>All systems operational</strong><small>Last synced just now</small></span></div><a className="nav-item" href="#settings"><span>⚙</span>Settings</a><div className="profile-row"><span className="avatar avatar-dark">P</span><span><strong>Pratham</strong><small>Personal workspace</small></span><span className="more">•••</span></div></div>
+      </aside>
+
+      <div className="content-wrap">
+        <header className="topbar"><div className="breadcrumb"><span>Workspace</span><b>/</b><strong>Overview</strong></div><div className="top-actions"><button className="icon-button" aria-label="Search">⌕</button><button className="icon-button notification" aria-label="Notifications">♢<i /></button><button className="top-avatar">P</button></div></header>
+        <div className="dashboard-content" id="overview">
+          <section className="hero-section reveal"><div><div className="eyebrow"><span className="eyebrow-dot" />Thursday, July 3, 2026</div><h1>Your job search,<br /><span>in motion.</span></h1><p className="hero-copy">A calm command center for finding the right roles, making a strong impression, and keeping every opportunity moving forward.</p></div><a href="#launch" className="primary-button">Launch an application <span>{icons.arrow}</span></a></section>
+
+          <section className="stats-grid reveal reveal-delay-1"><StatCard label="Applications" value={summary.totalApplications} detail="Tracked end to end" tone="tone-coral" /><StatCard label="Replies" value={summary.replies} detail="A 37% response rate" tone="tone-lavender" /><StatCard label="Interviewing" value={summary.interviewing} detail="Active conversations" tone="tone-blue" /><StatCard label="Offers" value={summary.offers} detail="Offer-track progress" tone="tone-green" /></section>
+
+          <section className="main-grid reveal reveal-delay-2" id="pipeline"><article className="panel pipeline-panel"><div className="panel-heading"><div><SectionLabel>Pipeline health</SectionLabel><h2>Application momentum</h2></div><button className="ghost-button">Last 30 days <span>⌄</span></button></div><div className="pipeline-chart"><div className="chart-lines"><span /><span /><span /><span /></div><div className="chart-bars">{pipelineStages.map((stage, index) => <div className="chart-column" key={stage.label}><div className={`bar bar-${index}`} style={{ height: `${Math.max(stage.percentage, 8) * 2.1}%` }}><b>{stage.count}</b></div><span>{stage.label}</span></div>)}</div></div><div className="pipeline-footer"><span><i className="legend-dot coral" />Strongest activity this week</span><strong>+18% <span>vs last month</span></strong></div></article>
+            <article className="panel queue-panel"><div className="panel-heading"><div><SectionLabel>Up next</SectionLabel><h2>Priority queue</h2></div><a className="text-link" href="#launch">View all {icons.arrow}</a></div><div className="task-list">{nextActions.map((task, index) => <div className="task-row" key={task.title}><span className={`task-check ${index === 0 ? "task-active" : ""}`}>{index === 0 ? "→" : ""}</span><div><strong>{task.title}</strong><p>{task.description}</p></div><span className={`priority priority-${task.priority}`}>{task.priority}</span></div>)}</div></article></section>
+
+          <section className="split-grid reveal" id="roles"><article className="panel role-panel"><div className="panel-heading"><div><SectionLabel>AI role matches</SectionLabel><h2>Where you fit best</h2></div><span className="ai-badge">{icons.spark} AI ranked</span></div><p className="panel-description">Based on your experience, strengths, and the kind of work you want to do next.</p><div className="role-list">{careerPlan.roleSuggestions.slice(0, 3).map((role, index) => <div className="role-row" key={role.title}><span className="role-rank">0{index + 1}</span><div className="role-main"><strong>{role.title}</strong><span>{role.summary}</span><div className="tag-row">{role.searchQueries.slice(0, 2).map((query) => <small key={query}>{query}</small>)}</div></div><div className="fit-score"><strong>{role.fitScore}%</strong><span>fit</span></div></div>)}</div><a className="bottom-link" href="#roles">Explore all role matches {icons.arrow}</a></article>
+            <article className="panel company-panel" id="companies"><div className="panel-heading"><div><SectionLabel>Target companies</SectionLabel><h2>Good signals, right now</h2></div><span className="signal-badge"><i /> Live</span></div><p className="panel-description">Companies showing hiring momentum across your strongest role matches.</p><div className="company-list">{careerPlan.companyMatches.slice(0, 3).map((company) => <div className="company-row" key={company.id}><span className="company-logo">{company.name.slice(0, 1)}</span><div><strong>{company.name}</strong><span>{company.targetRole}</span></div><span className="company-score">{company.fitScore}%</span></div>)}</div><a className="bottom-link" href="#companies">Open company radar {icons.arrow}</a></article></section>
+
+          <section id="launch" className="launch-wrap reveal"><div className="launch-heading"><div><SectionLabel>Application agent</SectionLabel><h2>Turn a job post into momentum.</h2><p>Paste a role and let the agent tailor your resume, draft outreach, and keep your pipeline current.</p></div><span className="agent-orb">✦</span></div><QuickLaunchPanel /></section>
+
+          <section className="panel activity-panel reveal" id="activity"><div className="panel-heading"><div><SectionLabel>Recent activity</SectionLabel><h2>Everything in one place</h2></div><a className="text-link" href="#activity">Activity log {icons.arrow}</a></div><div className="table-wrap"><table><thead><tr><th>Company</th><th>Role</th><th>Status</th><th>Next step</th></tr></thead><tbody>{recentApplications.map((application) => <tr key={application.id}><td><span className="table-company"><i>{application.companyName.slice(0, 1)}</i><strong>{application.companyName}</strong></span></td><td>{application.jobTitle}</td><td><span className={`status status-${application.status}`}>{application.status.replaceAll("_", " ")}</span></td><td>{application.nextStep ?? "Review next action"}</td></tr>)}</tbody></table></div></section>
+
+          <section className="insight-grid reveal">{highlights.map((highlight) => <article className="insight-card" key={highlight.title}><span className="insight-icon">✦</span><SectionLabel>{highlight.eyebrow}</SectionLabel><h3>{highlight.title}</h3><p>{highlight.description}</p></article>)}</section>
         </div>
-      </section>
-
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <article className="rounded-[1.75rem] border border-slate-200 bg-white/85 p-6 shadow-card">
-          <p className="text-sm uppercase tracking-[0.2em] text-steel">Total applications</p>
-          <p className="mt-4 text-4xl font-semibold text-ink">{summary.totalApplications}</p>
-          <p className="mt-3 text-sm text-steel">Tracked end to end with outcomes and follow-up notes.</p>
-        </article>
-        <article className="rounded-[1.75rem] border border-slate-200 bg-white/85 p-6 shadow-card">
-          <p className="text-sm uppercase tracking-[0.2em] text-steel">Replies</p>
-          <p className="mt-4 text-4xl font-semibold text-ink">{summary.replies}</p>
-          <p className="mt-3 text-sm text-steel">Includes positive responses, interview progress, and offers.</p>
-        </article>
-        <article className="rounded-[1.75rem] border border-slate-200 bg-white/85 p-6 shadow-card">
-          <p className="text-sm uppercase tracking-[0.2em] text-steel">Interviewing</p>
-          <p className="mt-4 text-4xl font-semibold text-ink">{summary.interviewing}</p>
-          <p className="mt-3 text-sm text-steel">Active conversations currently in motion.</p>
-        </article>
-        <article className="rounded-[1.75rem] border border-slate-200 bg-white/85 p-6 shadow-card">
-          <p className="text-sm uppercase tracking-[0.2em] text-steel">Offers</p>
-          <p className="mt-4 text-4xl font-semibold text-ink">{summary.offers}</p>
-          <p className="mt-3 text-sm text-steel">Current offer-track progress across the pipeline.</p>
-        </article>
-      </section>
-
-      <section className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-        <article className="rounded-[2rem] border border-slate-200 bg-white/85 p-6 shadow-card">
-          <p className="text-sm uppercase tracking-[0.2em] text-steel">AI role suggestions</p>
-          <h2 className="mt-2 text-2xl font-semibold text-ink">Best-fit roles for your resume</h2>
-          <p className="mt-3 text-sm leading-7 text-steel">
-            These are ranked from your social media, marketing, CRM, and lead generation experience.
-          </p>
-          <div className="mt-6 space-y-4">
-            {careerPlan.roleSuggestions.map((role) => (
-              <div key={role.title} className="rounded-3xl bg-slate-50 p-4">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="font-medium text-ink">{role.title}</p>
-                    <p className="mt-1 text-sm text-steel">{role.summary}</p>
-                  </div>
-                  <span className="rounded-full bg-clay/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-clay">
-                    {role.fitScore}%
-                  </span>
-                </div>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {role.searchQueries.map((query) => (
-                    <span
-                      key={query}
-                      className="rounded-full bg-white px-3 py-1 text-xs text-steel"
-                    >
-                      {query}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </article>
-
-        <article className="rounded-[2rem] border border-slate-200 bg-white/85 p-6 shadow-card">
-          <p className="text-sm uppercase tracking-[0.2em] text-steel">Apollo company search</p>
-          <h2 className="mt-2 text-2xl font-semibold text-ink">Companies to target next</h2>
-          <p className="mt-3 text-sm leading-7 text-steel">
-            Apollo is modeled as the sourcing layer here, with a free fallback list until the API key is connected.
-          </p>
-          <div className="mt-6 space-y-4">
-            {careerPlan.companyMatches.map((company) => (
-              <div key={company.id} className="rounded-3xl bg-slate-50 p-4">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="font-medium text-ink">{company.name}</p>
-                    <p className="mt-1 text-sm text-steel">
-                      {company.targetRole} - {company.stage}
-                    </p>
-                  </div>
-                  <span className="rounded-full bg-moss/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-moss">
-                    {company.fitScore}%
-                  </span>
-                </div>
-                <p className="mt-3 text-sm text-steel">{company.reason}</p>
-                <p className="mt-2 text-xs uppercase tracking-[0.2em] text-steel">
-                  {company.hiringSignal}
-                </p>
-              </div>
-            ))}
-          </div>
-        </article>
-      </section>
-
-      <section className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-        <article className="rounded-[2rem] border border-slate-200 bg-white/85 p-6 shadow-card">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-steel">Pipeline</p>
-              <h2 className="mt-2 text-2xl font-semibold text-ink">Application momentum</h2>
-            </div>
-            <span className="rounded-full bg-moss/10 px-4 py-2 text-sm font-medium text-moss">
-              Conversion-aware
-            </span>
-          </div>
-          <div className="mt-6 grid gap-4 md:grid-cols-4">
-            {pipelineStages.map((stage) => (
-              <div key={stage.label} className="rounded-3xl bg-slate-50 p-4">
-                <p className="text-sm text-steel">{stage.label}</p>
-                <p className="mt-3 text-3xl font-semibold text-ink">{stage.count}</p>
-                <div className="mt-4 h-2 rounded-full bg-slate-200">
-                  <div
-                    className="h-2 rounded-full bg-clay"
-                    style={{ width: `${stage.percentage}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </article>
-
-        <article className="rounded-[2rem] border border-slate-200 bg-white/85 p-6 shadow-card">
-          <p className="text-sm uppercase tracking-[0.2em] text-steel">Today</p>
-          <h2 className="mt-2 text-2xl font-semibold text-ink">Priority queue</h2>
-          <div className="mt-6 space-y-4">
-            {nextActions.map((task) => (
-              <div key={task.title} className="rounded-3xl bg-slate-50 p-4">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="font-medium text-ink">{task.title}</p>
-                    <p className="mt-2 text-sm text-steel">{task.description}</p>
-                  </div>
-                  <span className="rounded-full bg-clay/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-clay">
-                    {task.priority}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </article>
-      </section>
-
-      <QuickLaunchPanel />
-
-      <section className="rounded-[2rem] border border-slate-200 bg-white/85 p-6 shadow-card">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-sm uppercase tracking-[0.2em] text-steel">Recent applications</p>
-            <h2 className="mt-2 text-2xl font-semibold text-ink">Live outcome tracker</h2>
-          </div>
-          <span className="rounded-full bg-clay/10 px-4 py-2 text-sm font-medium text-clay">
-            Updated from real records
-          </span>
-        </div>
-        <div className="mt-6 overflow-hidden rounded-[1.5rem] border border-slate-200">
-          <table className="min-w-full divide-y divide-slate-200 bg-white">
-            <thead className="bg-slate-50 text-left text-xs uppercase tracking-[0.2em] text-steel">
-              <tr>
-                <th className="px-4 py-3">Company</th>
-                <th className="px-4 py-3">Role</th>
-                <th className="px-4 py-3">Contact</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Outcome</th>
-                <th className="px-4 py-3">Next step</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {recentApplications.map((application) => (
-                <tr key={application.id} className="text-sm">
-                  <td className="px-4 py-4 font-medium text-ink">{application.companyName}</td>
-                  <td className="px-4 py-4 text-steel">{application.jobTitle}</td>
-                  <td className="px-4 py-4 text-steel">
-                    <div className="font-medium text-ink">{application.contactName ?? "Hiring team"}</div>
-                    <div>{application.contactRole ?? "Point of contact"}</div>
-                  </td>
-                  <td className="px-4 py-4">
-                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-ink">
-                      {application.status.replaceAll("_", " ")}
-                    </span>
-                  </td>
-                  <td className="px-4 py-4 text-steel">{application.outcomeSummary ?? "Pending"}</td>
-                  <td className="px-4 py-4 text-steel">{application.nextStep ?? "Review next action"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section className="grid gap-4 lg:grid-cols-3">
-        {highlights.map((highlight) => (
-          <article
-            key={highlight.title}
-            className="rounded-[1.75rem] border border-slate-200 bg-white/85 p-6 shadow-card"
-          >
-            <p className="text-sm uppercase tracking-[0.2em] text-steel">{highlight.eyebrow}</p>
-            <h3 className="mt-3 text-2xl font-semibold text-ink">{highlight.title}</h3>
-            <p className="mt-3 text-sm leading-7 text-steel">{highlight.description}</p>
-          </article>
-        ))}
-      </section>
-
-      <section className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-        <article className="rounded-[2rem] border border-slate-200 bg-white/85 p-6 shadow-card">
-          <p className="text-sm uppercase tracking-[0.2em] text-steel">How the automation works</p>
-          <h2 className="mt-2 text-2xl font-semibold text-ink">Tailor, send, and track</h2>
-          <p className="mt-3 text-sm leading-7 text-steel">
-            The workflow should first suggest the best roles from your resume, then use Apollo to source companies, tailor the resume to the role, draft the outreach message to the point of contact, submit the application, and write the outcome back to the dashboard.
-          </p>
-          <p className="mt-4 text-sm leading-7 text-steel">
-            When email credentials are connected, the same flow can send directly. Until then, it still produces the ready-to-send draft and keeps the pipeline visible.
-          </p>
-        </article>
-        <article className="rounded-[2rem] border border-slate-200 bg-white/85 p-6 shadow-card">
-          <p className="text-sm uppercase tracking-[0.2em] text-steel">Next actions</p>
-          <h2 className="mt-2 text-2xl font-semibold text-ink">What happens next</h2>
-          <div className="mt-4 space-y-4">
-            {nextActions.map((action) => (
-              <div key={action.title} className="rounded-3xl bg-slate-50 p-4">
-                <p className="font-medium text-ink">{action.title}</p>
-                <p className="mt-2 text-sm text-steel">{action.description}</p>
-              </div>
-            ))}
-          </div>
-        </article>
-      </section>
+      </div>
     </main>
   );
 }

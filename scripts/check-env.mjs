@@ -6,7 +6,6 @@ try {
   // The validator will report missing values below if the file is absent.
 }
 
-// Keys the app cannot run without: DB connection + the port/name it boots with.
 const requiredKeys = [
   "NODE_ENV",
   "PORT",
@@ -14,14 +13,7 @@ const requiredKeys = [
   "DATABASE_URL",
   "SUPABASE_URL",
   "SUPABASE_ANON_KEY",
-  "SUPABASE_SERVICE_ROLE_KEY"
-];
-
-// Keys that unlock optional features. Nothing in the codebase currently reads
-// HUBSPOT_ACCESS_TOKEN, SLACK_BOT_TOKEN, or SLACK_SIGNING_SECRET, so they live
-// here rather than blocking startup. N8N_ENCRYPTION_KEY is only needed if you
-// run the n8n container from docker-compose.yml.
-const optionalKeys = [
+  "SUPABASE_SERVICE_ROLE_KEY",
   "N8N_ENCRYPTION_KEY",
   "HUBSPOT_ACCESS_TOKEN",
   "SLACK_BOT_TOKEN",
@@ -29,13 +21,29 @@ const optionalKeys = [
   "AI_PROVIDER",
   "OLLAMA_BASE_URL",
   "OLLAMA_MODEL",
+  "CRON_SECRET"
+];
+
+const optionalKeys = [
   "NOTION_API_KEY",
   "NOTION_DATABASE_ID",
   "OPENAI_API_KEY",
   "ANTHROPIC_API_KEY",
   "APOLLO_API_KEY",
   "CLAY_API_KEY",
-  "LINKEDIN_SESSION_COOKIE",
+  "AI_API_KEY",
+  "AI_BASE_URL",
+  "AI_MODEL",
+  "GREENHOUSE_API_KEY",
+  "GREENHOUSE_BOARD_TOKENS",
+  "LEVER_API_KEY",
+  "LEVER_SITE_NAMES",
+  "ASHBY_API_KEY",
+  "ASHBY_JOB_BOARDS",
+  "ADZUNA_APP_ID",
+  "ADZUNA_APP_KEY",
+  "ADZUNA_COUNTRY",
+  "ADZUNA_QUERY",
   "GMAIL_CLIENT_ID",
   "GMAIL_CLIENT_SECRET",
   "GOOGLE_CALENDAR_CLIENT_ID",
