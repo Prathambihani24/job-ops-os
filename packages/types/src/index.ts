@@ -166,4 +166,29 @@ export type DashboardOverview = {
   pipelineStages: DashboardPipelineStage[];
   nextActions: DashboardTask[];
   careerPlan: CareerPlan;
+  discoveredJobs?: DiscoveredJobRecord[];
+  resumeVersions?: ResumeVersionRecord[];
+};
+
+export type DiscoveredJobRecord = {
+  id: string;
+  source: string;
+  title: string;
+  company: string;
+  location?: string;
+  description?: string;
+  url?: string;
+  fitScore: number;
+  reasons: string[];
+  gaps: string[];
+  discoveredAt?: string;
+};
+
+export type ResumeVersionRecord = {
+  id: string;
+  profileName: string;
+  ownerName: string;
+  sourceMarkdown: string;
+  createdAt?: string;
+  updatedAt?: string;
 };

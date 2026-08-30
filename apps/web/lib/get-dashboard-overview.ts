@@ -1,4 +1,4 @@
-import type { ApplicationRecord, DashboardOverview } from "@gtm-os/types";
+import type { ApplicationRecord, DashboardOverview, DiscoveredJobRecord, ResumeVersionRecord } from "@gtm-os/types";
 import { buildDashboardOverview } from "../../api/src/services/dashboard-data.js";
 
 function getSupabaseConfig() {
@@ -40,6 +40,49 @@ async function readLiveApplications() {
   return response.json();
 }
 
+async function readLiveDiscoveredJobs(): Promise<DiscoveredJobRecord[] | null> {
+  const supabase = getSupabaseConfig();
+  if (!supabase) return null;
+  const response = await fetch(
+    `${supabase.baseUrl}/rest/v1/discovered_jobs?select=*&order=fit_score.desc,discovered_at.desc&limit=12`,
+    { cache: "no-store", headers: { apikey: supabase.serviceRoleKey, authorization: `Bearer ${supabase.serviceRoleKey}` } }
+  );
+  if (!response.ok) return null;
+  const rows = await response.json();
+  return Array.isArray(rows) ? rows.map((row) => ({
+    id: row.id,
+    source: row.source,
+    title: row.title,
+    company: row.company,
+    location: row.location,
+    description: row.description,
+    url: row.job_url,
+    fitScore: row.fit_score ?? 0,
+    reasons: Array.isArray(row.reasons) ? row.reasons : [],
+    gaps: Array.isArray(row.gaps) ? row.gaps : [],
+    discoveredAt: row.discovered_at
+  })) : [];
+}
+
+async function readLiveResumeVersions(): Promise<ResumeVersionRecord[] | null> {
+  const supabase = getSupabaseConfig();
+  if (!supabase) return null;
+  const response = await fetch(
+    `${supabase.baseUrl}/rest/v1/resume_profiles?select=id,profile_name,owner_name,source_markdown,created_at,updated_at&order=created_at.desc&limit=6`,
+    { cache: "no-store", headers: { apikey: supabase.serviceRoleKey, authorization: `Bearer ${supabase.serviceRoleKey}` } }
+  );
+  if (!response.ok) return null;
+  const rows = await response.json();
+  return Array.isArray(rows) ? rows.map((row) => ({
+    id: row.id,
+    profileName: row.profile_name,
+    ownerName: row.owner_name,
+    sourceMarkdown: row.source_markdown,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at
+  })) : [];
+}
+
 async function readApiOverview(fallbackOverview: DashboardOverview) {
   if (process.env.API_BASE_URL) {
     const response = await fetch(`${process.env.API_BASE_URL}/v1/dashboard/overview`, {
@@ -57,13 +100,34 @@ async function readApiOverview(fallbackOverview: DashboardOverview) {
   return (await buildDashboardOverview()) as DashboardOverview;
 }
 
+function emptyLiveOverview(fallbackOverview: DashboardOverview): DashboardOverview {
+  return {
+    summary: { totalApplications: 0, sent: 0, interviewing: 0, replies: 0, offers: 0 },
+    recentApplications: [],
+    pipelineStages: [
+      { label: "Sourced", count: 0, percentage: 0 },
+      { label: "Applied", count: 0, percentage: 0 },
+      { label: "Interviewing", count: 0, percentage: 0 },
+      { label: "Offer Track", count: 0, percentage: 0 }
+    ],
+    nextActions: fallbackOverview.nextActions,
+    careerPlan: fallbackOverview.careerPlan,
+    discoveredJobs: [],
+    resumeVersions: []
+  };
+}
+
 export async function getDashboardOverview(
   fallbackOverview: DashboardOverview
 ): Promise<DashboardOverview> {
   try {
-    const liveApplications = await readLiveApplications();
+    const [liveApplications, discoveredJobs, resumeVersions] = await Promise.all([
+      readLiveApplications(),
+      readLiveDiscoveredJobs(),
+      readLiveResumeVersions()
+    ]);
 
-    if (Array.isArray(liveApplications) && liveApplications.length > 0) {
+    if (Array.isArray(liveApplications)) {
       const recentApplications = liveApplications.map((row) => ({
         id: row.id,
         companyName: row.company_name ?? row.companyName,
@@ -94,17 +158,20 @@ export async function getDashboardOverview(
         summary,
         recentApplications,
         pipelineStages: [
-          { label: "Sourced", count: 82, percentage: 100 },
-          { label: "Applied", count: summary.totalApplications, percentage: 48 },
-          { label: "Interviewing", count: summary.interviewing, percentage: 16 },
-          { label: "Offer Track", count: summary.offers, percentage: 2 }
+          { label: "Sourced", count: discoveredJobs?.length ?? 0, percentage: 100 },
+          { label: "Applied", count: summary.totalApplications, percentage: discoveredJobs?.length ? Math.round((summary.totalApplications / discoveredJobs.length) * 100) : summary.totalApplications ? 100 : 0 },
+          { label: "Interviewing", count: summary.interviewing, percentage: summary.totalApplications ? Math.round((summary.interviewing / summary.totalApplications) * 100) : 0 },
+          { label: "Offer Track", count: summary.offers, percentage: summary.totalApplications ? Math.round((summary.offers / summary.totalApplications) * 100) : 0 }
         ],
         nextActions: fallbackOverview.nextActions,
-        careerPlan: fallbackOverview.careerPlan
+        careerPlan: fallbackOverview.careerPlan,
+        discoveredJobs: discoveredJobs ?? [],
+        resumeVersions: resumeVersions ?? []
       };
     }
   } catch {
-    // Fall back to the API route below.
+    // A configured live workspace should remain honest when its database is temporarily unavailable.
+    if (getSupabaseConfig()) return emptyLiveOverview(fallbackOverview);
   }
 
   try {
