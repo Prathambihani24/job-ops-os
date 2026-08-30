@@ -1,5 +1,6 @@
 import type { DashboardHighlight, DashboardOverview } from "@gtm-os/types";
 import type { ReactNode } from "react";
+import { FindJobsButton } from "./find-jobs-button";
 import { QuickLaunchPanel } from "./quick-launch-panel";
 
 type DashboardShellProps = { highlights: DashboardHighlight[]; overview: DashboardOverview };
@@ -45,7 +46,7 @@ export function DashboardShell({ highlights, overview }: DashboardShellProps) {
       <div className="content-wrap">
         <header className="topbar"><div className="breadcrumb"><span>Workspace</span><b>/</b><strong>Overview</strong></div><div className="top-actions"><button className="icon-button" aria-label="Search">⌕</button><button className="icon-button notification" aria-label="Notifications">♢<i /></button><button className="top-avatar">P</button></div></header>
         <div className="dashboard-content" id="overview">
-          <section className="hero-section reveal"><div><div className="eyebrow"><span className="eyebrow-dot" />Thursday, July 3, 2026</div><h1>Your job search,<br /><span>in motion.</span></h1><p className="hero-copy">A calm command center for finding the right roles, making a strong impression, and keeping every opportunity moving forward.</p></div><a href="#launch" className="primary-button">Launch an application <span>{icons.arrow}</span></a></section>
+          <section className="hero-section reveal"><div><div className="eyebrow"><span className="eyebrow-dot" />Thursday, July 3, 2026</div><h1>Your job search,<br /><span>in motion.</span></h1><p className="hero-copy">A calm command center for finding the right roles, making a strong impression, and keeping every opportunity moving forward.</p></div><FindJobsButton /></section>
 
           <section className="stats-grid reveal reveal-delay-1"><StatCard label="Applications" value={summary.totalApplications} detail="Tracked end to end" tone="tone-coral" /><StatCard label="Replies" value={summary.replies} detail="A 37% response rate" tone="tone-lavender" /><StatCard label="Interviewing" value={summary.interviewing} detail="Active conversations" tone="tone-blue" /><StatCard label="Offers" value={summary.offers} detail="Offer-track progress" tone="tone-green" /></section>
 
