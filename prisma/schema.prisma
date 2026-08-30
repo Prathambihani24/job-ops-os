@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("SUPABASE_DATABASE_URL")
+}
+
+model UserProfile {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  name              String
+  technicalSkills   String[]
+  crmExperience     String[]
+  marketingAutomation String[]
+  apis              String[]
+  dataAnalysis      String[]
+  portfolioLinks    String[]
+  resumeUrl         String?
+}
+
+model Job {
+  id               String   @id @default(cuid())
+  title            String
+  company          String
+  location         String
+  description      String
+  skills           String[]
+  gtmAlignmentScore Float    @default(0)
+}
+
+model Application {
+  id         String   @id @default(cuid())
+  userId     String
+  jobId      String
+  status     String   @default("saved")
+  followUpDate DateTime?
+
+  UserProfile UserProfile @relation(fields: [userId], references: [id])
+  Job         Job        @relation(fields: [jobId], references: [id])
+}
