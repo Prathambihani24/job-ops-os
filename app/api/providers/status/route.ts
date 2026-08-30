@@ -16,6 +16,6 @@ export async function GET() {
       apollo: Boolean(config.apolloApiKey),
       clay: Boolean(config.clayApiKey)
     },
-    background: { cronConfigured: Boolean(config.cronSecret), schedule: "0 */6 * * *" }
+    background: { cronConfigured: Boolean(config.cronSecret), schedule: "0 9 * * *", manualTrigger: "/api/jobs/discover" }
   });
 }
