@@ -4,8 +4,6 @@ import { supabase } from '@/lib/supabase';
 import { useEffect, useState } from 'react';
 import { ApplicationTracker } from '@/types';
 
-export const dynamic = 'force-dynamic';
-
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
   const [stats, setStats] = useState({
