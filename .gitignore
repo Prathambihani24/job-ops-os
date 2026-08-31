@@ -12,3 +12,4 @@ tmp/
 .vercel/
 *.log
 .vercel
+.env*
