@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES2022"
+    ],
     "allowJs": false,
     "skipLibCheck": true,
     "strict": true,
@@ -14,11 +18,26 @@
     "jsx": "preserve",
     "incremental": true,
     "baseUrl": ".",
+    "allowImportingTsExtensions": true,
     "paths": {
-      "@gtm-os/config": ["packages/config/src/index.ts"],
-      "@gtm-os/providers": ["packages/providers/src/index.ts"],
-      "@gtm-os/shared-domain": ["packages/shared-domain/src/index.ts"],
-      "@gtm-os/types": ["packages/types/src/index.ts"]
+      "@gtm-os/config": [
+        "packages/config/src/index.ts"
+      ],
+      "@gtm-os/providers": [
+        "packages/providers/src/index.ts"
+      ],
+      "@gtm-os/shared-domain": [
+        "packages/shared-domain/src/index.ts"
+      ],
+      "@gtm-os/types": [
+        "packages/types/src/index.ts"
+      ],
+      "@/lib/*": [
+        "lib/*"
+      ],
+      "@/types": [
+        "types/index.ts"
+      ]
     }
   }
 }

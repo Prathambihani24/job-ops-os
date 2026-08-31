@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
       matchScore: 0,
       postedDate: '2024-08-27',
     },
-  ];n
+  ];
 
   const filtered = mockJobs.filter((job) => {
     const matchesSearch = job.title.toLowerCase().includes(search.toLowerCase()) ||

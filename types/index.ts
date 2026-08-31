@@ -1,5 +1,11 @@
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+}
+
 export interface UserProfile {
-  id?: string;
+  id: string;
   email: string;
   name: string;
   technicalSkills: string[];
@@ -8,22 +14,34 @@ export interface UserProfile {
   apis: string[];
   dataAnalysis: string[];
   portfolioLinks: string[];
-  resumeUrl?: string | null;
+  resumeUrl: string | null;
+}
+
+export interface ApplicationTracker {
+  id: string;
+  userId: string;
+  jobId?: string;
+  status: 'saved' | 'applied' | 'interviewing' | 'offer' | 'rejected';
+  jobTitle?: string;
+  company?: string;
+  matchScore?: number;
+  appliedDate?: string;
+  updated_at?: string;
 }
 
 export interface JobOpportunity {
   id: string;
   title: string;
   company: string;
-  location: string;
-  type: string; // Remote, Hybrid, Onsite
+  location?: string;
+  gtmRoleType?: string;
+  type?: string;
   salaryRange?: string;
-  description: string;
-  requiredSkills: string[];
-  gtmRoleType: 'GTM Engineer' | 'Solutions Engineer' | 'RevOps Engineer' | 'Technical Account Manager';
+  description?: string;
+  requiredSkills?: string[];
   matchScore?: number;
-  postedDate: string;
-  sourceUrl?: string;
+  postedDate?: string;
+  gtmAlignmentScore?: number;
 }
 
 export interface JDAnalysisResult {
@@ -35,23 +53,8 @@ export interface JDAnalysisResult {
     crmScore: number;
     apiScore: number;
     automationScore: number;
-    overallFit: string;
+    overallFit: number;
   };
   missingSkills: string[];
   suggestedBulletPoints: string[];
-}
-
-export type ApplicationStatus = 'saved' | 'applied' | 'interviewing' | 'offer' | 'rejected';
-
-export interface ApplicationTracker {
-  id: string;
-  userId: string;
-  jobId: string;
-  jobTitle: string;
-  company: string;
-  status: ApplicationStatus;
-  appliedDate?: string;
-  followUpDate?: string | null;
-  notes?: string;
-  matchScore: number;
 }

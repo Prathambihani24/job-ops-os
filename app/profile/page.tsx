@@ -1,14 +1,28 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { useUser } from '@supabase/auth-helpers-react';
+import { useEffect, useState } from 'react';
 
 export default function ProfilePage() {
-  const { user } = useUser();
+  const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setUser(data.user);
+    };
+
+    getUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     if (!user) {
@@ -25,7 +39,34 @@ export default function ProfilePage() {
           .single();
 
         if (error && error.code !== 'PGRST116') throw error;
-        setProfile(data || null);
+
+        if (data) {
+          // Convert comma-separated strings back to arrays
+          const profileWithArrays = {
+            ...data,
+            technicalSkills: data.technicalSkills
+              ? data.technicalSkills.split(',').filter(Boolean)
+              : [],
+            crmExperience: data.crmExperience
+              ? data.crmExperience.split(',').filter(Boolean)
+              : [],
+            marketingAutomation: data.marketingAutomation
+              ? data.marketingAutomation.split(',').filter(Boolean)
+              : [],
+            apis: data.apis
+              ? data.apis.split(',').filter(Boolean)
+              : [],
+            dataAnalysis: data.dataAnalysis
+              ? data.dataAnalysis.split(',').filter(Boolean)
+              : [],
+            portfolioLinks: data.portfolioLinks
+              ? data.portfolioLinks.split(',').filter(Boolean)
+              : [],
+          };
+          setProfile(profileWithArrays);
+        } else {
+          setProfile(null);
+        }
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -36,7 +77,7 @@ export default function ProfilePage() {
     fetchProfile();
   }, [user]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!user) return;
 
@@ -45,30 +86,36 @@ export default function ProfilePage() {
       id: user.id,
       email: user.email!,
       name: formData.get('name') as string,
-      technicalSkills: (formData.get('technicalSkills') as string)
+      technicalSkills: (((formData.get('technicalSkills') ?? '') as string)
         .split(',')
         .map((s) => s.trim())
-        .filter(Boolean),
-      crmExperience: (formData.get('crmExperience') as string)
+        .filter(Boolean))
+        .join(','),
+      crmExperience: (((formData.get('crmExperience') ?? '') as string)
         .split(',')
         .map((s) => s.trim())
-        .filter(Boolean),
-      marketingAutomation: (formData.get('marketingAutomation') as string)
+        .filter(Boolean))
+        .join(','),
+      marketingAutomation: (((formData.get('marketingAutomation') ?? '') as string)
         .split(',')
         .map((s) => s.trim())
-        .filter(Boolean),
-      apis: (formData.get('apis') as string)
+        .filter(Boolean))
+        .join(','),
+      apis: (((formData.get('apis') ?? '') as string)
         .split(',')
         .map((s) => s.trim())
-        .filter(Boolean),
-      dataAnalysis: (formData.get('dataAnalysis') as string)
+        .filter(Boolean))
+        .join(','),
+      dataAnalysis: (((formData.get('dataAnalysis') ?? '') as string)
         .split(',')
         .map((s) => s.trim())
-        .filter(Boolean),
-      portfolioLinks: (formData.get('portfolioLinks') as string)
+        .filter(Boolean))
+        .join(','),
+      portfolioLinks: (((formData.get('portfolioLinks') ?? '') as string)
         .split(',')
         .map((s) => s.trim())
-        .filter(Boolean),
+        .filter(Boolean))
+        .join(','),
       resumeUrl: formData.get('resumeUrl') as string || null,
       updated_at: new Date().toISOString(),
     };
@@ -76,7 +123,7 @@ export default function ProfilePage() {
     try {
       const { error } = await supabase
         .from('user_profiles')
-        .upsert(updates, { onConflict: ['id'] });
+        .upsert(updates, { onConflict: 'id' });
 
       if (error) throw error;
       alert('Profile saved successfully!');
@@ -116,7 +163,6 @@ export default function ProfilePage() {
         <div>
           <label className="block text-sm font-medium mb-1">Technical Skills (comma-separated)</label>
           <input
-            <input
             type="text"
             name="technicalSkills"
             defaultValue={profile?.technicalSkills?.join(', ') || ''}

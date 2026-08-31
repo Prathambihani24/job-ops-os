@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { useUser } from '@supabase/auth-helpers-react';
+import { useEffect, useState } from 'react';
 import { JobOpportunity } from '@/types';
 
 export default function JobsPage() {
-  const { user } = useUser();
+  const [user, setUser] = useState<any>(null);
   const [jobs, setJobs] = useState<JobOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -16,7 +15,7 @@ export default function JobsPage() {
   const [isMatching, setIsMatching] = useState(false);
 
   // Mock GTM jobs for demo (will be replaced with real API)
-  const mockGTMJobs = [
+  const mockGTMJobs: JobOpportunity[] = [
     {
       id: '1',
       title: 'GTM Engineer - Growth Platform',
@@ -56,12 +55,26 @@ export default function JobsPage() {
       matchScore: 0,
       postedDate: '2024-08-27',
     },
-  ];n
+  ];
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setUser(data.user);
+    };
+
+    getUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     // Load mock jobs initially
     setJobs(mockGTMJobs);
-    setMatchedJobs(mockGTMJobs);
   }, []);
 
   const handleSearch = (e: React.FormEvent) => {
@@ -70,7 +83,7 @@ export default function JobsPage() {
       const matchesQuery = job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         job.company.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesGtm = gtmFilter === 'all' || job.gtmRoleType === gtmFilter;
-      const matchesLocation = !location || job.location.toLowerCase().includes(location.toLowerCase());
+      const matchesLocation = !location || (job.location?.toLowerCase().includes(location.toLowerCase()) ?? false);
       return matchesQuery && matchesGtm && matchesLocation;
     });
     setJobs(filtered);
@@ -100,19 +113,19 @@ export default function JobsPage() {
       // Calculate match scores based on profile skills
       const scoredJobs = mockGTMJobs.map((job) => {
         let score = 0;
-        const skills = [...profile.technicalSkills, ...profile.crmExperience, ...profile.apis];
-        const jobSkills = job.requiredSkills;
+        const skills = [...(profile.technicalSkills || []), ...(profile.crmExperience || []), ...(profile.apis || [])];
+        const jobSkills = job.requiredSkills || [];
 
         // Exact match bonus
         jobSkills.forEach((skill) => {
-          if (skills.some((s) => s.toLowerCase() === skill.toLowerCase())) {
+          if (skills.some((s) => s.toLowerCase() === (skill || '').toLowerCase())) {
             score += 10;
           }
         });
 
         // Partial match
         jobSkills.forEach((skill) => {
-          if (skills.some((s) => s.toLowerCase().includes(skill.toLowerCase()))) {
+          if (skills.some((s) => s.toLowerCase().includes((skill || '').toLowerCase()))) {
             score += 5;
           }
         });
@@ -122,15 +135,16 @@ export default function JobsPage() {
           'GTM Engineer': 30,
           'Solutions Engineer': 25,
           'RevOps Engineer': 25,
-        } as any;
-        if (gtmWeights[profile.gtmRoleType || '']) {
-          score += gtmWeights[profile.gtmRoleType];
+        } as const;
+        const gtmRole = profile.gtmRoleType || '';
+        if (gtmRole in gtmWeights) {
+          score += gtmWeights[gtmRole as keyof typeof gtmWeights];
         }
 
         return { ...job, matchScore: Math.min(score, 100) };
       });
 
-      setMatchedJobs(scoredJobs.sort((a, b) => b.matchScore - a.matchScore));
+      setMatchedJobs(scoredJobs.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0)));
       setJobs(scoredJobs);
     } catch (error) {
       console.error('Match error:', error);
@@ -220,20 +234,20 @@ export default function JobsPage() {
                 <span className="font-medium">Company:</span> {job.company}
               </p>
               <p>
-                <span className="font-medium">Location:</span> {job.location}
+                <span className="font-medium">Location:</span> {job.location ?? 'Not specified'}
               </p>
               <p>
-                <span className="font-medium">Type:</span> {job.type}
+                <span className="font-medium">Type:</span> {job.type ?? 'Not specified'}
               </p>
               <p>
-                <span className="font-medium">Salary:</span> {job.salaryRange}
+                <span className="font-medium">Salary:</span> {job.salaryRange ?? 'Not specified'}
               </p>
             </div>
             <div className="mt-4 flex items-center justify-between">
               <div className="text-xs text-slate-500">
-                Posted {job.postedDate}
+                Posted {job.postedDate ?? 'Unknown'}
               </div>
-              {job.matchScore > 0 && (
+              {(job.matchScore ?? 0) > 0 && (
                 <div className="flex items-center space-x-1">
                   <div className="w-16 bg-slate-200 rounded-full h-2 overflow-hidden">
                     <div
@@ -242,7 +256,7 @@ export default function JobsPage() {
                     />
                   </div>
                   <span className="text-xs font-medium text-indigo-700">
-                    {job.matchScore}%
+                    {(job.matchScore ?? 0)}%
                   </span>
                 </div>
               )}

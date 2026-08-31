@@ -1,12 +1,11 @@
 'use client';
 
-import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { useUser } from '@supabase/auth-helpers-react';
+import { useEffect, useState } from 'react';
 import { JDAnalysisResult } from '@/types';
 
 export default function JDProcessorPage() {
-  const { user } = useUser();
+  const [user, setUser] = useState<any>(null);
   const [jdText, setJdText] = useState('');
   const [loading, setLoading] = useState(false);
   const [analysis, setAnalysis] = useState<JDAnalysisResult | null>(null);

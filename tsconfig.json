@@ -16,7 +16,11 @@
     "apps/web/**/*.tsx",
     "packages/**/*.ts",
     "packages/**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "lib/**/*.ts",
+    "lib/**/*.tsx"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

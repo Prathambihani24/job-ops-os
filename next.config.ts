@@ -10,7 +10,14 @@ const nextConfig: NextConfig = {
     "@gtm-os/shared-domain",
     "@gtm-os/types"
   ],
-  output: "standalone"
+  webpack(config) {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@/lib': path.resolve(__dirname, 'lib'),
+    };
+    console.log('Alias @/lib set to:', path.resolve(__dirname, 'lib'));
+    return config;
+  },
 };
 
 export default nextConfig;

@@ -1,12 +1,13 @@
 'use client';
 
-import { useUser } from '@supabase/auth-helpers-react';
 import { supabase } from '@/lib/supabase';
 import { useEffect, useState } from 'react';
 import { ApplicationTracker } from '@/types';
 
+export const dynamic = 'force-dynamic';
+
 export default function DashboardPage() {
-  const { user } = useUser();
+  const [user, setUser] = useState<any>(null);
   const [stats, setStats] = useState({
     totalApplications: 0,
     applied: 0,
@@ -16,55 +17,80 @@ export default function DashboardPage() {
   });
   const [loading, setLoading] = useState(true);
 
+  // Check if we're in the browser (not during static generation)
+  const isBrowser = typeof window !== 'undefined';
+
   useEffect(() => {
-    if (!user) return;
+    if (!isBrowser) return;
+
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setUser(data.user);
+    };
+
+    getUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [isBrowser]);
+
+  useEffect(() => {
+    if (!user || !isBrowser) return;
 
     const fetchStats = async () => {
-      const { count: total } = await supabase
-        .from('applications')
-        .select('*', { count: 'exact' })
-        .eq('userId', user.id);
+      try {
+        const { count: total } = await supabase
+          .from('applications')
+          .select('*', { count: 'exact' })
+          .eq('userId', user.id);
 
-      const { count: applied } = await supabase
-        .from('applications')
-        .select('*', { count: 'exact' })
-        .eq('userId', user.id)
-        .eq('status', 'applied');
+        const { count: applied } = await supabase
+          .from('applications')
+          .select('*', { count: 'exact' })
+          .eq('userId', user.id)
+          .eq('status', 'applied');
 
-      const { count: interviewing } = await supabase
-        .from('applications')
-        .select('*', { count: 'exact' })
-        .eq('userId', user.id)
-        .eq('status', 'interviewing');
+        const { count: interviewing } = await supabase
+          .from('applications')
+          .select('*', { count: 'exact' })
+          .eq('userId', user.id)
+          .eq('status', 'interviewing');
 
-      const { count: offer } = await supabase
-        .from('applications')
-        .select('*', { count: 'exact' })
-        .eq('userId', user.id)
-        .eq('status', 'offer');
+        const { count: offer } = await supabase
+          .from('applications')
+          .select('*', { count: 'exact' })
+          .eq('userId', user.id)
+          .eq('status', 'offer');
 
-      // Calculate average match score
-      const { data: apps } = await supabase
-        .from('applications')
-        .select('job:gtmAlignmentScore')
-        .eq('userId', user.id);
+        // Calculate average match score
+        const { data: apps } = await supabase
+          .from('applications')
+          .select('job:gtmAlignmentScore')
+          .eq('userId', user.id);
 
-      const avgScore = apps && apps.length > 0
-        ? Math.round((apps.reduce((sum, app) => sum + (app.job?.gtmAlignmentScore || 0), 0) / apps.length) * 100) / 100
-        : 0;
+        const avgScore = apps && apps.length > 0
+          ? Math.round((apps.reduce((sum, app) => sum + (app.job?.gtmAlignmentScore || 0), 0) / apps.length) * 100) / 100
+          : 0;
 
-      setStats({
-        totalApplications: total || 0,
-        applied: applied || 0,
-        interviewing: interviewing || 0,
-        offer: offer || 0,
-        matchScoreAvg: avgScore,
-      });
-      setLoading(false);
+        setStats({
+          totalApplications: total || 0,
+          applied: applied || 0,
+          interviewing: interviewing || 0,
+          offer: offer || 0,
+          matchScoreAvg: avgScore,
+        });
+      } catch (error) {
+        console.error('Failed to fetch stats:', error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchStats();
-  }, [user]);
+  }, [user, isBrowser]);
 
   if (loading) return <div className="p-6">Loading dashboard...</div>;
   if (!user) return <div className="p-6">Please sign in to view your dashboard.</div>;
@@ -129,7 +155,7 @@ export default function DashboardPage() {
           <p className="text-sm text-blue-700 mt-1">Paste a job description for AI-powered analysis.</p>
           <button
             onClick={() => window.open('/jd-analyzer', '_self')}
-            className="mt-3 w-full py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"
+            className="mt-3 w-full py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700"
           >
             Analyze JD
           </button>
