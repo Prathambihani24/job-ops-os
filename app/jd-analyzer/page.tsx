@@ -11,6 +11,25 @@ export default function JDProcessorPage() {
   const [analysis, setAnalysis] = useState<JDAnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const isBrowser = typeof window !== 'undefined';
+
+  useEffect(() => {
+    if (!isBrowser) return;
+
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setUser(data.user);
+    };
+
+    getUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [isBrowser]);
+
   const analyzeJD = async () => {
     if (!jdText.trim()) {
       setError('Please paste a job description first');
@@ -32,13 +51,6 @@ export default function JDProcessorPage() {
         .select('technicalSkills, crmExperience, apis, dataAnalysis')
         .eq('id', user.id)
         .single();
-
-      // Prepare context for Claude
-      const context = {
-        userProfile: profile || { technicalSkills: [], crmExperience: [], apis: [], dataAnalysis: [] },
-        jdText,
-        instruction: `Analyze this Job Description as a GTM Engineer. Return JSON with:\n- jobTitle: extracted from JD\n- companyName: extracted from JD\n- matchPercentage: 0-100 based on user's profile\n- coreTechnicalSkills: array of skills mentioned\n- gtmAlignment: object with crmScore, apiScore, automationScore (0-30 each)\n- missingSkills: skills user lacks\n- suggestedBulletPoints: 3-5 resume bullet points tailored to the JD`,
-      };
 
       // Call Claude API
       const response = await fetch('/api/jd-processor', {

@@ -11,3 +11,4 @@ tmp/
 .next/
 .vercel/
 *.log
+.vercel

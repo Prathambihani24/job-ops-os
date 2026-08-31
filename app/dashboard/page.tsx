@@ -15,7 +15,6 @@ export default function DashboardPage() {
   });
   const [loading, setLoading] = useState(true);
 
-  // Check if we're in the browser (not during static generation)
   const isBrowser = typeof window !== 'undefined';
 
   useEffect(() => {
@@ -63,7 +62,6 @@ export default function DashboardPage() {
           .eq('userId', user.id)
           .eq('status', 'offer');
 
-        // Calculate average match score
         const { data: apps } = await supabase
           .from('applications')
           .select('job:gtmAlignmentScore')
@@ -138,36 +136,36 @@ export default function DashboardPage() {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-indigo-50 rounded-lg p-4 border-l-4 border-indigo-500">
+        <a
+          href="/jobs"
+          className="bg-indigo-50 rounded-lg p-4 border-l-4 border-indigo-500 hover:bg-indigo-100 transition-colors"
+        >
           <h4 className="font-semibold text-indigo-900">Find Jobs</h4>
           <p className="text-sm text-indigo-700 mt-1">Search our GTM database and filter by role type.</p>
-          <button
-            onClick={() => window.open('/jobs', '_self')}
-            className="mt-3 w-full py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700"
-          >
+          <span className="mt-3 inline-block w-full text-center py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">
             Search Jobs
-          </button>
-        </div>
-        <div className="bg-blue-50 rounded-lg p-4 border-l-4 border-blue-500">
+          </span>
+        </a>
+        <a
+          href="/jd-analyzer"
+          className="bg-blue-50 rounded-lg p-4 border-l-4 border-blue-500 hover:bg-blue-100 transition-colors"
+        >
           <h4 className="font-semibold text-blue-900">Analyze JD</h4>
           <p className="text-sm text-blue-700 mt-1">Paste a job description for AI-powered analysis.</p>
-          <button
-            onClick={() => window.open('/jd-analyzer', '_self')}
-            className="mt-3 w-full py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700"
-          >
+          <span className="mt-3 inline-block w-full text-center py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">
             Analyze JD
-          </button>
-        </div>
-        <div className="bg-green-50 rounded-lg p-4 border-l-4 border-green-500">
+          </span>
+        </a>
+        <a
+          href="/applications"
+          className="bg-green-50 rounded-lg p-4 border-l-4 border-green-500 hover:bg-green-100 transition-colors"
+        >
           <h4 className="font-semibold text-green-900">Track Apps</h4>
           <p className="text-sm text-green-700 mt-1">Manage your application pipeline and follow-ups.</p>
-          <button
-            onClick={() => window.open('/applications', '_self')}
-            className="mt-3 w-full py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700"
-          >
+          <span className="mt-3 inline-block w-full text-center py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700">
             View Tracker
-          </button>
-        </div>
+          </span>
+        </a>
       </div>
     </div>
   );

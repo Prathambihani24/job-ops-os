@@ -25,10 +25,7 @@ export default function ProfilePage() {
   }, []);
 
   useEffect(() => {
-    if (!user) {
-      setLoading(false);
-      return;
-    }
+    if (!user) return;
 
     const fetchProfile = async () => {
       try {
@@ -165,7 +162,7 @@ export default function ProfilePage() {
           <input
             type="text"
             name="technicalSkills"
-            defaultValue={profile?.technicalSkills?.join(', ') || ''}
+            defaultValue={profile?.technicalSkills?.join(', ') ?? ''}
             className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="e.g., JavaScript, TypeScript, Python, SQL"
           />
@@ -176,7 +173,7 @@ export default function ProfilePage() {
           <input
             type="text"
             name="crmExperience"
-            defaultValue={profile?.crmExperience?.join(', ') || ''}
+            defaultValue={profile?.crmExperience?.join(', ') ?? ''}
             className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
@@ -186,7 +183,7 @@ export default function ProfilePage() {
           <input
             type="text"
             name="marketingAutomation"
-            defaultValue={profile?.marketingAutomation?.join(', ') || ''}
+            defaultValue={profile?.marketingAutomation?.join(', ') ?? ''}
             className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
@@ -196,7 +193,7 @@ export default function ProfilePage() {
           <input
             type="text"
             name="apis"
-            defaultValue={profile?.apis?.join(', ') || ''}
+            defaultValue={profile?.apis?.join(', ') ?? ''}
             className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
@@ -206,7 +203,7 @@ export default function ProfilePage() {
           <input
             type="text"
             name="dataAnalysis"
-            defaultValue={profile?.dataAnalysis?.join(', ') || ''}
+            defaultValue={profile?.dataAnalysis?.join(', ') ?? ''}
             className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
@@ -216,7 +213,7 @@ export default function ProfilePage() {
           <input
             type="text"
             name="portfolioLinks"
-            defaultValue={profile?.portfolioLinks?.join(', ') || ''}
+            defaultValue={profile?.portfolioLinks?.join(', ') ?? ''}
             className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="e.g., https://yourportfolio.com, https://github.com/yourname"
           />

@@ -25,7 +25,7 @@ export default function JobsPage() {
       salaryRange: '$120k - $180k',
       description: 'Build and scale growth automation workflows for enterprise SaaS. Deep expertise in HubSpot, Intercom, and data pipelines required.',
       requiredSkills: ['HubSpot', 'Python', 'SQL', 'API Integration', 'Data Analysis'],
-      gtmRoleType: 'GTM Engineer' as const,
+      gtmRoleType: 'GTM Engineer',
       matchScore: 0,
       postedDate: '2024-08-29',
     },
@@ -38,7 +38,7 @@ export default function JobsPage() {
       salaryRange: '$150k - $200k',
       description: 'Architect custom CRM solutions for Fortune 500 clients. Must have Salesforce Admin + Developer certification.',
       requiredSkills: ['Salesforce', 'Apex', 'SOQL', 'Lightning', 'Process Builder'],
-      gtmRoleType: 'Solutions Engineer' as const,
+      gtmRoleType: 'Solutions Engineer',
       matchScore: 0,
       postedDate: '2024-08-28',
     },
@@ -51,7 +51,7 @@ export default function JobsPage() {
       salaryRange: '€70k - €100k',
       description: 'Optimize revenue operations, build customer lifecycle automations, and improve renewal rates.',
       requiredSkills: ['Stripe', 'HubSpot', 'SQL', 'Automation', 'Customer Success'],
-      gtmRoleType: 'RevOps Engineer' as const,
+      gtmRoleType: 'RevOps Engineer',
       matchScore: 0,
       postedDate: '2024-08-27',
     },
@@ -131,14 +131,14 @@ export default function JobsPage() {
         });
 
         // GTM alignment bonus
-        const gtmWeights = {
+        const gtmWeights: Record<string, number> = {
           'GTM Engineer': 30,
           'Solutions Engineer': 25,
           'RevOps Engineer': 25,
-        } as const;
+        };
         const gtmRole = profile.gtmRoleType || '';
         if (gtmRole in gtmWeights) {
-          score += gtmWeights[gtmRole as keyof typeof gtmWeights];
+          score += gtmWeights[gtmRole];
         }
 
         return { ...job, matchScore: Math.min(score, 100) };
